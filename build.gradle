@@ -1,0 +1,47 @@
+apply plugin: 'java'
+apply plugin: 'war'
+
+sourceCompatibility = javaVersion
+version = appVersion
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        url "http://maven.springframework.org/milestone/"
+    }
+    maven {
+        url "http://repo.opensourceagility.com/releases"
+    }
+}
+
+configurations {
+    provided
+}
+
+sourceSets {
+    main { compileClasspath += configurations.provided }
+}
+
+dependencies {
+    provided group: 'com.sun.faces', name: 'jsf-api', version: mojarraVersion
+    provided group: 'com.sun.faces', name: 'jsf-impl', version: mojarraVersion
+
+    provided group: 'javax.servlet', name: 'javax.servlet-api', version: servletVersion
+
+    compile group: 'org.springframework', name: 'spring-beans', version: springVersion
+    compile group: 'org.springframework', name: 'spring-web', version: springVersion
+    compile group: 'org.springframework', name: 'spring-dao', version: '2.0.8'
+
+    compile group: 'org.springframework.social', name: 'spring-social-twitter', version: springSocialVersion
+    compile group: 'org.springframework.social', name: 'spring-social-facebook', version: springSocialVersion
+    compile group: 'org.springframework.social', name: 'spring-social-web', version: springSocialVersion
+    compile group: 'org.springframework.social', name: 'spring-social-security', version: springSocialVersion
+
+    compile group: 'org.springframework.security', name: 'spring-security-web', version: springSecurityVersion
+    compile group: 'org.springframework.security', name: 'spring-security-config', version: springSecurityVersion
+
+    compile group: 'org.socialsignin', name: 'spring-social-security', version: "1.1.0-SNAPSHOT"
+
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+}
