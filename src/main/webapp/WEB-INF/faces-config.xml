@@ -7,6 +7,11 @@
         <el-resolver>
             org.springframework.web.jsf.el.SpringBeanFacesELResolver
         </el-resolver>
+        
+        <resource-bundle>
+            <base-name>uk.me.krupa.wwa.ui.messages</base-name>
+            <var>messages</var>
+        </resource-bundle>
     </application>
 
 </faces-config>

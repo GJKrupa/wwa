@@ -36,12 +36,12 @@ dependencies {
     compile group: 'org.springframework.social', name: 'spring-social-twitter', version: springSocialVersion
     compile group: 'org.springframework.social', name: 'spring-social-facebook', version: springSocialVersion
     compile group: 'org.springframework.social', name: 'spring-social-web', version: springSocialVersion
-    compile group: 'org.springframework.social', name: 'spring-social-security', version: springSocialVersion
+    compile group: 'org.socialsignin', name: 'spring-social-security', version: "1.1.0-SNAPSHOT"
 
     compile group: 'org.springframework.security', name: 'spring-security-web', version: springSecurityVersion
     compile group: 'org.springframework.security', name: 'spring-security-config', version: springSecurityVersion
 
-    compile group: 'org.socialsignin', name: 'spring-social-security', version: "1.1.0-SNAPSHOT"
+
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }

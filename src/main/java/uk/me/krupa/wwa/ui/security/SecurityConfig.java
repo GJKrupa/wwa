@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.config.annotation.SecurityConfigurer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -38,6 +39,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private UserService userService;
 
     @Override
+    @SuppressWarnings("unchecked")
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .formLogin()
@@ -60,11 +62,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                             "/connect/**",
                             "/signin/**",
                             "/signup/**",
+                            "/javax.faces.resource/**",
                             "/user/register/**"
                     ).permitAll()
                     .anyRequest().authenticated()
                 .and()
-                    .apply(new SpringSocialConfigurer());
+                    .apply((SecurityConfigurer) (new SpringSocialConfigurer()));
     }
 
     @Override

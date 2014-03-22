@@ -2,21 +2,25 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <head></head>
+    <ui:composition template="WEB-INF/templates/template-nav.xhtml">
+        <ui:define name="head"><title>Words With Attitude</title></ui:define>
 
-    <body>
-        <p><h:outputText value="User: #{loginController.username}"/></p>
-        <p><h:outputText value="User: #{loginController.name}"/></p>
-        <p><img src="#{loginController.imageUrl}" alt="Picture" /></p>
+        <ui:define name="content">
+            <p><h:outputText value="User: #{loginController.username}"/></p>
+            <p><h:outputText value="User: #{loginController.name}"/></p>
+            <p><img src="#{loginController.imageUrl}" alt="Picture" /></p>
 
-        <form id="logout" action="logout" method="POST">
-            <input type="submit" value="Logout"/>
-            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-        </form>
-
-    </body>
+            <form id="logout" action="logout" method="POST">
+                <button type="submit" class="btn btn-danger">
+                    <i class="fa fa-sign-out"></i> | Log Out
+                </button>
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            </form>
+        </ui:define>
+    </ui:composition>
 
 </html>

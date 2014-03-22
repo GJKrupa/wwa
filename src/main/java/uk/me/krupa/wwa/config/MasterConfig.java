@@ -26,10 +26,10 @@ public class MasterConfig {
         return new PropertyPlaceholderConfigurer();
     }
 
-    @Bean
+    @Bean(name = "springMessages")
     public MessageSource messageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasename("/messages");
+        messageSource.setBasename("/uk/me/krupa/wwa/ui/messages");
         messageSource.setUseCodeAsDefaultMessage(true);
         return messageSource;
     }
