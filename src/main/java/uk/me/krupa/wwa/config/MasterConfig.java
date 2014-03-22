@@ -4,6 +4,7 @@ import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import uk.me.krupa.wwa.repository.RepositoryConfig;
 import uk.me.krupa.wwa.service.ServiceConfig;
 import uk.me.krupa.wwa.ui.controller.ControllerConfig;
 import uk.me.krupa.wwa.ui.security.SecurityConfig;
@@ -11,6 +12,7 @@ import uk.me.krupa.wwa.ui.security.SpringSocialConfig;
 
 @Configuration
 @Import({
+        RepositoryConfig.class,
         ControllerConfig.class,
         SecurityConfig.class,
         ServiceConfig.class,

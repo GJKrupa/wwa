@@ -60,8 +60,13 @@ public class SpringSocialConfig implements SocialConfigurer {
     @Override
     public UsersConnectionRepository getUsersConnectionRepository(final ConnectionFactoryLocator connectionFactoryLocator) {
         InMemoryUsersConnectionRepository repository = new InMemoryUsersConnectionRepository(connectionFactoryLocator);
-        repository.setConnectionSignUp(new SocialConnectionSignup());
+        repository.setConnectionSignUp(socialConnectionSignup());
         return repository;
+    }
+
+    @Bean
+    public SocialConnectionSignup socialConnectionSignup() {
+        return new SocialConnectionSignup();
     }
 
     @Bean

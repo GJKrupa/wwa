@@ -5,6 +5,7 @@ package uk.me.krupa.wwa.repository.user;
  */
 public interface UserDetailsRepository {
     void addImageForUser(String userId, String url);
-
     String getUrlForUser(String userId);
+    void addNameForUser(String userId, String name);
+    String getNameForUser(String userId);
 }

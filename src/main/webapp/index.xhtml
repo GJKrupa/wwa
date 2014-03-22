@@ -9,6 +9,8 @@
 
     <body>
         <p><h:outputText value="User: #{loginController.username}"/></p>
+        <p><h:outputText value="User: #{loginController.name}"/></p>
+        <p><img src="#{loginController.imageUrl}" alt="Picture" /></p>
 
         <form id="logout" action="logout" method="POST">
             <input type="submit" value="Logout"/>
