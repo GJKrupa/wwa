@@ -1,5 +1,6 @@
 package uk.me.krupa.wwa.service.user;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,23 +10,18 @@ import org.springframework.social.security.SocialUser;
 import org.springframework.social.security.SocialUserDetails;
 import org.springframework.social.security.SocialUserDetailsService;
 import org.springframework.stereotype.Service;
+import uk.me.krupa.wwa.entity.user.User;
+import uk.me.krupa.wwa.entity.user.UserAuthority;
+import uk.me.krupa.wwa.repository.user.UserDetailsRepository;
 
 import java.util.Collections;
 
-/**
- * Created by krupagj on 19/03/2014.
- */
-@Service("springSocialSecurityUserDetailsService")
-public class UserService implements UserDetailsService, SocialUserDetailsService {
+public interface UserService {
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return new SocialUser(username, "FAKE", Collections.<GrantedAuthority>emptyList());
-    }
+    User saveUser(User user);
+    User loadByUsername(String username);
 
+    UserAuthority getUserAuthority(String permission);
+    UserAuthority saveUserAuthority(UserAuthority userAuthority);
 
-    @Override
-    public SocialUserDetails loadUserByUserId(String userId) throws UsernameNotFoundException, DataAccessException {
-        return new SocialUser(userId, "FAKE", Collections.<GrantedAuthority>emptyList());
-    }
 }

@@ -1,12 +1,37 @@
 package uk.me.krupa.wwa.repository;
 
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.factory.GraphDatabaseFactory;
+import org.neo4j.kernel.EmbeddedGraphDatabase;
+import org.neo4j.kernel.impl.transaction.SpringTransactionManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.*;
+import org.springframework.data.neo4j.aspects.config.Neo4jAspectConfiguration;
+import org.springframework.data.neo4j.config.EnableNeo4jRepositories;
+import org.springframework.data.neo4j.config.Neo4jConfiguration;
+import org.springframework.data.neo4j.rest.SpringRestGraphDatabase;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import javax.transaction.TransactionManager;
 
 /**
  * Created by krupagj on 21/03/2014.
  */
 @Configuration
-@ComponentScan(basePackages = "uk.me.krupa.wwa.repository")
-public class RepositoryConfig {
+@EnableNeo4jRepositories(basePackages = "uk.me.krupa.wwa.repository")
+public class RepositoryConfig extends Neo4jAspectConfiguration {
+
+    public RepositoryConfig() {
+        setBasePackage("uk.me.krupa.wwa.entity");
+    }
+
+    @Bean(name = "graphDatabaseService")
+    @Value("${database.location}")
+    public GraphDatabaseService embeddedGraphDatabase(String location) {
+        return new SpringRestGraphDatabase(location);
+    }
+
+
+
 }
