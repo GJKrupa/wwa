@@ -11,6 +11,7 @@ import org.springframework.data.neo4j.aspects.config.Neo4jAspectConfiguration;
 import org.springframework.data.neo4j.config.EnableNeo4jRepositories;
 import org.springframework.data.neo4j.config.Neo4jConfiguration;
 import org.springframework.data.neo4j.rest.SpringRestGraphDatabase;
+import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.transaction.TransactionManager;
@@ -32,6 +33,10 @@ public class RepositoryConfig extends Neo4jAspectConfiguration {
         return new SpringRestGraphDatabase(location);
     }
 
-
+//    @Bean(name = "neo4jTemplate")
+//    @Autowired
+//    public Neo4jTemplate neo4jTemplate(GraphDatabaseService graphDatabaseService) {
+//        return new Neo4jTemplate(graphDatabaseService);
+//    }
 
 }

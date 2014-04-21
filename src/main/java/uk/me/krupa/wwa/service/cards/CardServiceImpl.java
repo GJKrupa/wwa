@@ -73,4 +73,10 @@ public class CardServiceImpl implements CardService {
     public List<BlackCard> getBlackCardsFor(CardSet cardSet) {
         return Collections.<BlackCard>unmodifiableList(cardRepository.getBlackCardsInSet(cardSet));
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<WhiteCard> getWhiteCardsFor(CardSet cardSet) {
+        return Collections.unmodifiableList(cardRepository.getWhiteCardsInSet(cardSet));
+    }
 }

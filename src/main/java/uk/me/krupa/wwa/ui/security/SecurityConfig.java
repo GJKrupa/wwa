@@ -42,6 +42,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @SuppressWarnings("unchecked")
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .csrf()
+                    .disable()
                 .formLogin()
                     .loginPage("/login.xhtml")
                     .loginProcessingUrl("/login/authenticate")

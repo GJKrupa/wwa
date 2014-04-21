@@ -1,19 +1,28 @@
-.blackCard {
+.card {
     width: 250px;
     min-width: 250px;
     height: 250px;
     min-height: 250px;
-    background: #000000;
-    color: #ffffff;
     border-radius: 1em;
     padding: 20px 20px 20px 20px;
     margin: 10px 10px 10px 10px;
     float: left;
     position: relative;
+}
+
+.whiteCard {
+    background: #ffffff;
+    color: #000000;
+    border: thick double black;
+}
+
+.blackCard {
+    background: #000000;
+    color: #ffffff;
     border: thick double white;
 }
 
-.blackCard .title {
+.card .title {
     font-size: large;
 }
 
@@ -31,4 +40,8 @@
     display: inline-block;
     height: 12pt;
     text-align: center;
+}
+
+ul.gameList, ul.gameList li {
+    list-style: none;
 }
