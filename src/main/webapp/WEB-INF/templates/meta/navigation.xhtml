@@ -7,7 +7,8 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <h:body>
-        <div class="navbar navbar-inverse" role="navigation">
+        <div class="navbar navbar-default" role="navigation">
+            <h:form id="userForm">
             <div class="container">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -23,8 +24,35 @@
                         <li><h:link outcome="/index" value="#{messages.home}"/></li>
                         <li><h:link outcome="/cardSet" value="#{messages.cardSet}"/></li>
                     </ul>
+
+
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <img src="#{gameManagerController.imageUrl}" alt="Avatar" />
+                                <h:outputText value="#{gameManagerController.fullName}"/>
+                                <b class="caret"></b>
+                            </a>
+
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <h:commandLink action="#{userController.viewMyProfile}" immediate="true">
+                                        <h:outputText value="#{messages.viewMyProfile}"/>
+                                    </h:commandLink>
+                                </li>
+                                <li class="divider"></li>
+                                <li>
+                                    <h:commandLink action="#{userController.logout}" immediate="true">
+                                        <i class="fa fa-sign-out"></i> | <h:outputText value="#{messages.logOut}"/>
+                                    </h:commandLink>
+                                </li>
+                            </ul>
+                        </li>
+
+                    </ul>
                 </div><!--/.nav-collapse -->
             </div>
+            </h:form>
         </div>
     </h:body>
 

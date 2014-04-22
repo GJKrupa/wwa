@@ -8,58 +8,85 @@
       xmlns:sec="http://www.springframework.org/security/tags">
 
     <ui:composition template="WEB-INF/templates/template-nav.xhtml">
-        <ui:define name="head"><title>Words With Attitude</title></ui:define>
+        <ui:define name="head"><title><h:outputText value="#{messages.appName}"/></title></ui:define>
 
         <ui:define name="content">
             <div class="row">
                 <div class="col-md-12">
-                    <p><h:outputText value="User: #{gameManagerController.username}"/></p>
-                    <p><h:outputText value="User: #{gameManagerController.fullName}"/></p>
-                    <p><img src="#{gameManagerController.imageUrl}" alt="Picture" /></p>
-
-                    <form id="logout" action="logout" method="POST">
-                        <button type="submit" class="btn btn-danger">
-                            <i class="fa fa-sign-out"></i> | Log Out
-                        </button>
-                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                    </form>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <h2>Create a New Game</h2>
+                    <h2><h:outputText value="#{messages.createNewGame}"/></h2>
                     <h:form id="createGame">
                         <div class="form-group">
-                            <label for="gameName">Name</label>
+                            <label for="gameName"><h:outputText value="#{messages.name}"/></label>
                             <h:inputText id="gameName" styleClass="form-control" value="#{gameManagerController.name}"/>
                         </div>
-                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                         <h:commandLink action="#{gameManagerController.createGame}" styleClass="btn btn-primary">
-                            <i class="fa fa-plus"></i> Create Game
+                            <i class="fa fa-plus"></i> | <h:outputText value="#{messages.createGame}"/>
                         </h:commandLink>
                     </h:form>
                 </div>
 
                 <div class="col-md-6">
-                    <h2>Available Games</h2>
+                    <h2><h:outputText value="#{messages.availableGames}"/></h2>
                     <h:form id="openGame">
                     <ul class="list-group">
-                        <ui:repeat value="#{gameManagerController.activeGames}" var="game">
+                        <ui:repeat value="#{gameManagerController.openGames}" var="game">
                             <li class="list-group-item">
                                 <span class="badge"><h:outputText value="#{game.playerCount}"/></span>
                                 <h4 class="list-group-item-heading"><h:outputText value="#{game.name}"/></h4>
-                                <p class="list-group-item-text">
-                                    Owner: <h:outputText value="#{game.owner.user.fullName}"/>
+                                <p>
+                                    <h:outputText value="#{messages.owner}"/>: <h:outputText value="#{game.owner.user.fullName}"/>
                                 </p>
-                                <h:commandLink action="#{gameManagerController.joinGame}" styleClass="btn btn-default">
-                                    <i class="fa fa-caret-square-o-right"></i> Join
-                                </h:commandLink>
+                                <p>
+                                    <h:commandLink action="#{gameManagerController.joinGame}" styleClass="btn btn-success">
+                                        <i class="fa fa-users"></i> | <h:outputText value="#{messages.join}"/>
+                                    </h:commandLink>
+                                </p>
                             </li>
                         </ui:repeat>
                     </ul>
                     </h:form>
                 </div>
+
+                <div class="col-md-6">
+                    <h2><h:outputText value="#{messages.myGames}"/></h2>
+                    <h:form id="myGame">
+                        <ul class="list-group">
+                            <ui:repeat value="#{gameManagerController.myGames}" var="game">
+                                <li class="list-group-item">
+                                    <span class="badge"><h:outputText value="#{game.playerCount}"/></span>
+                                    <h4 class="list-group-item-heading"><h:outputText value="#{game.name}"/></h4>
+                                    <p class="list-group-item-text">
+                                        <h:outputText value="#{messages.owner}"/>:
+                                        <h:outputText value="#{game.owner.user.fullName}" rendered="#{!gameManagerController.myGame}"/>
+                                        <h:outputText value="Me" rendered="#{gameManagerController.myGame}"/>
+                                    </p>
+
+                                    <p>
+                                        <h:outputText value="#{messages.players}"/>:
+                                    </p>
+                                    <ul class="userList">
+                                        <ui:repeat value="#{game.playerList}" var="player">
+                                            <li>
+                                                <img src="#{player.user.imageUrl}" alt="avatar"/> <h:outputText value="#{player.user.fullName}"/>
+                                            </li>
+                                        </ui:repeat>
+                                    </ul>
+
+                                    <p>
+                                        <h:commandLink action="#{gameManagerController.openGame}" styleClass="btn btn-info">
+                                            <i class="fa fa-folder-open"></i> | <h:outputText value="#{messages.open}"/>
+                                        </h:commandLink>
+
+                                        <h:commandLink action="#{gameManagerController.startGame}" styleClass="btn btn-success" rendered="#{gameManagerController.myGame and game.playerCount gt 2 and game.currentRound == null}">
+                                            <i class="fa fa-check-circle"></i> | <h:outputText value="#{messages.start}"/>
+                                        </h:commandLink>
+                                    </p>
+                                </li>
+                            </ui:repeat>
+                        </ul>
+                    </h:form>
+                </div>
+
             </div>
         </ui:define>
     </ui:composition>

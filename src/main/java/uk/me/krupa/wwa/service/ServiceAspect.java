@@ -19,8 +19,12 @@ public class ServiceAspect {
 
     @Around("serviceMethod()")
     public Object doNothing(ProceedingJoinPoint joinPoint) throws Throwable {
-        System.err.println(joinPoint.getSignature().toLongString());
-        return joinPoint.proceed();
+        System.err.println("START: " + joinPoint.getSignature().toLongString());
+        long start = System.currentTimeMillis();
+        Object retval = joinPoint.proceed();
+        long end = System.currentTimeMillis();
+        System.err.println("END: " + joinPoint.getSignature().toLongString() + " (" + (end-start) + ")");
+        return retval;
     }
 
 }

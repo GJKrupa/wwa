@@ -7,8 +7,7 @@ import uk.me.krupa.wwa.entity.cards.WhiteCard;
 import uk.me.krupa.wwa.entity.common.BaseEntity;
 import uk.me.krupa.wwa.entity.user.User;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by krupagj on 21/04/2014.
@@ -17,6 +16,8 @@ import java.util.Set;
 public class Game extends BaseEntity {
 
     private String name;
+
+    private GameState state;
 
     @Fetch
     private Player owner;
@@ -27,10 +28,8 @@ public class Game extends BaseEntity {
     @Fetch
     private Round currentRound;
 
-    @Fetch
     private Set<BlackCard> blackDeck;
 
-    @Fetch
     private Set<WhiteCard> whiteDeck;
 
     public String getName() {
@@ -39,6 +38,14 @@ public class Game extends BaseEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public GameState getState() {
+        return state;
+    }
+
+    public void setState(GameState state) {
+        this.state = state;
     }
 
     public Player getOwner() {
@@ -54,6 +61,12 @@ public class Game extends BaseEntity {
             players = new HashSet<>();
         }
         return players;
+    }
+
+    public List<Player> getPlayerList() {
+        List<Player> playerList = new LinkedList<>(getPlayers());
+        playerList.sort((a, b) -> a.getOrder() - b.getOrder());
+        return Collections.unmodifiableList(playerList);
     }
 
     public void setPlayers(Set<Player> players) {
@@ -103,7 +116,19 @@ public class Game extends BaseEntity {
         return player;
     }
 
+    public boolean isPlaying(User user) {
+        return players.stream()
+                .map(p -> p.getUser().equals(user))
+                .reduce(false, (a, b) -> a || b);
+    }
+
     public int getPlayerCount() {
         return players.size();
+    }
+
+    public Player getPlayerForUser(User user) {
+        return getPlayers().stream()
+                .filter(p -> p.getUser().equals(user))
+                .findFirst().get();
     }
 }

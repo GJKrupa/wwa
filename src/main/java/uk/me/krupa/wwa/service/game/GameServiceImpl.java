@@ -7,9 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.me.krupa.wwa.entity.cards.BlackCard;
 import uk.me.krupa.wwa.entity.cards.CardSet;
 import uk.me.krupa.wwa.entity.cards.WhiteCard;
-import uk.me.krupa.wwa.entity.game.Game;
-import uk.me.krupa.wwa.entity.game.Player;
-import uk.me.krupa.wwa.entity.game.Round;
+import uk.me.krupa.wwa.entity.game.*;
 import uk.me.krupa.wwa.entity.user.User;
 import uk.me.krupa.wwa.repository.cards.CardRepository;
 import uk.me.krupa.wwa.repository.game.GameRepository;
@@ -48,8 +46,15 @@ public class GameServiceImpl implements GameService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Game> getOpenGames(User user) {
-        return gameRepository.findAll().as(List.class);
+        return Collections.unmodifiableList(new LinkedList(gameRepository.listOpenGames(user)));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Game> getGamesForUser(User user) {
+        return Collections.unmodifiableList(new LinkedList(gameRepository.listGamesForUser(user)));
     }
 
     @Override
@@ -57,6 +62,7 @@ public class GameServiceImpl implements GameService{
     public void createGame(User user, String name) {
         Game game = new Game();
         game.setName(name);
+        game.setState(GameState.PENDING);
 
         Player owner = game.addPlayer(user);
         game.setOwner(owner);
@@ -70,26 +76,58 @@ public class GameServiceImpl implements GameService{
     }
 
     @Override
+    @Transactional
     public void joinGame(User user, Long id) {
         Game game = gameRepository.findOne(id);
         game.addPlayer(user);
         gameRepository.save(game);
     }
 
-    private void pickAdditionalCards(Game game, Round round) {
-        int handSize;
-        // Play 3, Pick 2
-        if (round.getBlackCard().getPlayCount() == 3) {
-            handSize = 12;
-        } else {
-            handSize = 10;
+    @Override
+    @Transactional(readOnly = true)
+    public Game getGameById(long id) {
+        return gameRepository.findOne(id);
+    }
+
+    @Override
+    @Transactional
+    public void playCards(User user, List<WhiteCard> cards, Long gameId) {
+        Game game = gameRepository.findOne(gameId);
+        Player player = game.getPlayerForUser(user);
+
+        Round currentRound = game.getCurrentRound();
+        Play play = new Play();
+        play.setCard1(cards.get(0));
+        if (cards.size() > 1) {
+            play.setCard2(cards.get(2));
         }
+        if (cards.size() > 3) {
+            play.setCard3(cards.get(3));
+        }
+        play.setPlayer(player);
+        currentRound.getPlays().add(play);
+
+        gameRepository.save(game);
+    }
+
+    private void pickAdditionalCards(Game game, Round round) {
+
+        neo4jTemplate.fetch(game.getWhiteDeck());
+        neo4jTemplate.fetch(game.getBlackDeck());
 
         List<WhiteCard> whiteCards = new ArrayList<>(game.getWhiteDeck());
         Collections.shuffle(whiteCards, random);
         Iterator<WhiteCard> it = whiteCards.iterator();
 
-        game.getPlayers().stream().filter(player -> !player.equals(round.getCzar())).forEach(player -> {
+        game.getPlayers().stream().forEach(player -> {
+            int handSize;
+            // Play 3, Pick 2
+            if (round.getBlackCard().getPlayCount() == 3 && !round.getCzar().equals(player)) {
+                handSize = 12;
+            } else {
+                handSize = 10;
+            }
+
             while (player.getHand().size() < handSize && it.hasNext()) {
                 WhiteCard card = it.next();
                 game.getWhiteDeck().remove(card);
@@ -114,6 +152,7 @@ public class GameServiceImpl implements GameService{
     }
 
     private BlackCard selectBlackCard(Game game, Round round) {
+        neo4jTemplate.fetch(game.getBlackDeck());
         List<BlackCard> blackCards = new ArrayList<>(game.getBlackDeck());
         BlackCard selected = blackCards.get(random.nextInt(blackCards.size()));
 

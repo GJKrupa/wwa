@@ -20,6 +20,7 @@ import org.springframework.social.connect.web.ConnectController;
 import org.springframework.social.connect.web.ProviderSignInController;
 import org.springframework.social.connect.web.SignInAdapter;
 import org.springframework.social.facebook.connect.FacebookConnectionFactory;
+import org.springframework.social.linkedin.connect.LinkedInConnectionFactory;
 import org.springframework.social.security.AuthenticationNameUserIdSource;
 import org.springframework.social.twitter.connect.TwitterConnectionFactory;
 import org.springframework.util.MultiValueMap;
@@ -50,6 +51,11 @@ public class SpringSocialConfig implements SocialConfigurer {
                 env.getProperty("facebook.app.id"),
                 env.getProperty("facebook.app.secret")
         ));
+        config.addConnectionFactory(new LinkedInConnectionFactory(
+                env.getProperty("linkedin.app.key"),
+                env.getProperty("linkedin.app.secret")
+        ));
+
     }
 
     @Override

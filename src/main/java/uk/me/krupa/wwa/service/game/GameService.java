@@ -1,6 +1,8 @@
 package uk.me.krupa.wwa.service.game;
 
+import uk.me.krupa.wwa.entity.cards.WhiteCard;
 import uk.me.krupa.wwa.entity.game.Game;
+import uk.me.krupa.wwa.entity.game.Player;
 import uk.me.krupa.wwa.entity.game.Round;
 import uk.me.krupa.wwa.entity.user.User;
 
@@ -15,7 +17,13 @@ public interface GameService {
 
     List<Game> getOpenGames(User user);
 
+    List<Game> getGamesForUser(User user);
+
     void createGame(User user, String name);
 
     void joinGame(User user, Long id);
+
+    Game getGameById(long id);
+
+    void playCards(User user, List<WhiteCard> card, Long gameId);
 }

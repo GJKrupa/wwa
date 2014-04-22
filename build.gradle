@@ -31,6 +31,7 @@ dependencies {
 
     compile group: 'org.springframework.social', name: 'spring-social-twitter', version: springSocialVersion
     compile group: 'org.springframework.social', name: 'spring-social-facebook', version: springSocialVersion
+    compile group: 'org.springframework.social', name: 'spring-social-linkedin', version: '1.0.0.RC4'
     compile group: 'org.springframework.social', name: 'spring-social-web', version: springSocialVersion
     compile group: 'org.socialsignin', name: 'spring-social-security', version: "1.1.0-SNAPSHOT"
 
@@ -42,6 +43,8 @@ dependencies {
     compile group: 'org.springframework.data', name: 'spring-data-neo4j', version: '3.0.1.RELEASE'
     compile group: 'org.springframework.data', name: 'spring-data-neo4j-rest', version: '3.0.1.RELEASE'
     compile group: 'org.springframework.data', name: 'spring-data-neo4j-aspects', version: '3.0.1.RELEASE'
+    compile group: 'org.neo4j.app', name: 'neo4j-server', version: '2.0.1'
+    compile group: 'org.neo4j.app', name: 'neo4j-server', version: '2.0.1', classifier: 'static-web'
 
     compile group: 'com.sun.jersey', name: 'jersey-core', version: '1.9'
 

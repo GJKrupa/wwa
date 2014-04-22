@@ -6,6 +6,8 @@ import uk.me.krupa.wwa.entity.user.User;
 import uk.me.krupa.wwa.service.user.UserService;
 
 import javax.annotation.PostConstruct;
+import javax.faces.context.FacesContext;
+import javax.faces.context.Flash;
 
 /**
  * Created by krupagj on 21/04/2014.
@@ -15,27 +17,45 @@ public class AbstractController {
     @Autowired
     private UserService userService;
 
+    private String name;
     private User user;
 
-    @PostConstruct
-    public void init() {
+    protected User getUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        user = userService.loadByUsername(username);
+
+        if (user == null || name == null || !name.equals(username)) {
+            user = userService.loadByUsername(username);
+            name = username;
+        }
+
+        return user;
     }
 
     public String getUsername() {
-        return user.getUsername();
+        return getUser().getUsername();
     }
 
     public String getImageUrl() {
-        return user.getImageUrl();
+        return getUser().getImageUrl();
     }
 
     public String getFullName() {
-        return user.getFullName();
+        return getUser().getFullName();
     }
 
-    protected User getUser() {
-        return user;
+    protected <T> void addToFlash(String key, T value) {
+        getFlashScope().put(key, value);
+    }
+
+    protected <T> T getFromFlash(String key, Class<? extends T> clazz) {
+        return (T)getFlashScope().get(key);
+    }
+
+    protected boolean isInFlash(String key) {
+        return getFlashScope().containsKey(key);
+    }
+
+    private Flash getFlashScope() {
+        return FacesContext.getCurrentInstance().getExternalContext().getFlash();
     }
 }

@@ -4,10 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import uk.me.krupa.wwa.entity.game.Game;
+import uk.me.krupa.wwa.entity.game.Player;
 import uk.me.krupa.wwa.service.game.GameService;
 
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by krupagj on 21/04/2014.
@@ -19,25 +22,58 @@ public class GameManagerController extends AbstractController {
     @Autowired
     private GameService gameService;
 
-    private DataModel<Game> games;
+    @Autowired
+    private GamePlayController gamePlayController;
+
+    private DataModel<Game> openGames;
+    private DataModel<Game> myGames;
 
     private String name;
 
-    public DataModel<Game> getActiveGames() {
-        if (games == null) {
-            games = new ListDataModel<>(gameService.getOpenGames(getUser()));
+    public DataModel<Game> getOpenGames() {
+        if (openGames == null) {
+            openGames = new ListDataModel<>(gameService.getOpenGames(getUser()));
         }
-        return games;
+        return openGames;
+    }
+
+    public DataModel<Game> getMyGames() {
+        if (myGames == null) {
+            myGames = new ListDataModel<>(gameService.getGamesForUser(getUser()));
+        }
+        return myGames;
     }
 
     public void createGame() {
         gameService.createGame(getUser(), name);
-        games = null;
+        myGames = null;
     }
 
     public void joinGame() {
-        gameService.joinGame(getUser(), games.getRowData().getId());
-        games = null;
+        gameService.joinGame(getUser(), openGames.getRowData().getId());
+        openGames = null;
+        myGames = null;
+    }
+
+    public String startGame() {
+        gameService.createNewRound(myGames.getRowData().getId());
+        gamePlayController.setGameId(myGames.getRowData().getId());
+        return "/play";
+    }
+
+    public String openGame() {
+        Game game = myGames.getRowData();
+
+        if (game.getCurrentRound() == null) {
+            return "/viewPending";
+        } else {
+            gamePlayController.setGameId(myGames.getRowData().getId());
+            return "/play";
+        }
+    }
+
+    public boolean isMyGame() {
+        return myGames.getRowData().getOwner().getUser().equals(getUser());
     }
 
     public String getName() {

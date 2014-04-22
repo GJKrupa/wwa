@@ -35,7 +35,9 @@ public class CardServiceImpl implements CardService {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/black.txt")))) {
             String line;
             while ((line = reader.readLine()) != null) {
+                System.out.println("BLACK: " + line);
                 if (!line.isEmpty()) {
+
                     BlackCard card = new BlackCard();
                     card.setText(line);
                     card.setPlayCount(StringUtils.countOccurrencesOf(line, "_"));
@@ -49,6 +51,7 @@ public class CardServiceImpl implements CardService {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/white.txt")))) {
             String line;
             while ((line = reader.readLine()) != null) {
+                System.out.println("WHITE: " + line);
                 if (!line.isEmpty()) {
                     WhiteCard card = new WhiteCard();
                     card.setText(line);
