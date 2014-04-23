@@ -47,6 +47,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()
                     .loginPage("/login.xhtml")
                     .loginProcessingUrl("/login/authenticate")
+                    .defaultSuccessUrl("/index.xhtml", true)
                     .failureUrl("/login.xhtml?error=bad_credentials")
                     .permitAll()
                 .and()
@@ -60,7 +61,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     //Anyone can access the urls
                     .antMatchers(
                             "/auth/**",
+                            "/login",
                             "/login.xhtml",
+                            "/signup.xhtml",
                             "/connect/**",
                             "/signin/**",
                             "/signup/**",

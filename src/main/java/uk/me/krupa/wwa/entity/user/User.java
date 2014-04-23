@@ -19,6 +19,7 @@ import java.util.*;
 public class User extends BaseEntity implements UserDetails, SocialUserDetails {
 
     private String username;
+    private String password;
     private String firstName;
     private String lastName;
     private String fullName;
@@ -85,11 +86,6 @@ public class User extends BaseEntity implements UserDetails, SocialUserDetails {
     }
 
     @Override
-    public String getPassword() {
-        return "FAKE";
-    }
-
-    @Override
     public String getUsername() {
         return username;
     }
@@ -100,17 +96,17 @@ public class User extends BaseEntity implements UserDetails, SocialUserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
@@ -121,5 +117,14 @@ public class User extends BaseEntity implements UserDetails, SocialUserDetails {
     @Override
     public String getUserId() {
         return username;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
