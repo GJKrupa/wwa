@@ -6,6 +6,8 @@ import uk.me.krupa.wwa.entity.cards.WhiteCard;
 import uk.me.krupa.wwa.entity.common.BaseEntity;
 import uk.me.krupa.wwa.entity.user.User;
 
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -56,5 +58,19 @@ public class Play extends BaseEntity {
 
     public void setCard3(WhiteCard card3) {
         this.card3 = card3;
+    }
+
+    public List<WhiteCard> getCardsAsList() {
+        List<WhiteCard> cards = new LinkedList<>();
+        if (card1 != null) {
+            cards.add(card1);
+        }
+        if (card2 != null) {
+            cards.add(card2);
+        }
+        if (card3 != null) {
+            cards.add(card3);
+        }
+        return Collections.unmodifiableList(cards);
     }
 }

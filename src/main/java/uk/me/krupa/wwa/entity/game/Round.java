@@ -4,6 +4,7 @@ import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import uk.me.krupa.wwa.entity.cards.BlackCard;
 import uk.me.krupa.wwa.entity.common.BaseEntity;
+import uk.me.krupa.wwa.entity.user.User;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -58,5 +59,19 @@ public class Round extends BaseEntity {
 
     public void setCzar(Player czar) {
         this.czar = czar;
+    }
+
+    public boolean hasPlayed(User user) {
+        return getPlays().stream()
+                .filter(p -> p.getPlayer().getUser().equals(user))
+                .findFirst()
+                .isPresent();
+    }
+
+    public Play playFor(User user) {
+        return getPlays().stream()
+                .filter(p -> p.getPlayer().getUser().equals(user))
+                .findFirst()
+                .orElse(null);
     }
 }

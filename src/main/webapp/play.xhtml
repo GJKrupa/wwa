@@ -30,6 +30,16 @@
                         </h:panelGroup>
                     </div>
 
+                    <h:panelGroup rendered="#{gamePlayController.playedMove}">
+                        <ui:repeat value="#{gamePlayController.myPlay.cardsAsList}" var="card">
+                            <div class="card whiteCard">
+                                <div class="title">
+                                    <h:outputText value="#{card.text}"/>
+                                </div>
+                            </div>
+                        </ui:repeat>
+                    </h:panelGroup>
+
                     <h:form id="removeCardForm">
                         <ui:repeat value="#{gamePlayController.pendingModel}" var="card">
                             <h:commandLink action="#{gamePlayController.removeCard}">
@@ -44,7 +54,7 @@
 
                 </div>
 
-                <h:panelGroup rendered="#{!gamePlayController.czar}">
+                <h:panelGroup rendered="#{!gamePlayController.czar and !gamePlayController.playedMove}">
                     <div class="col-md-12">
                         <h:form id="playCardForm">
                             <ui:repeat value="#{gamePlayController.myHand}" var="card">

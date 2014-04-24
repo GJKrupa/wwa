@@ -44,6 +44,10 @@ public class GamePlayController extends AbstractController {
 
     public void setGameId(long gameId) {
         this.gameId = gameId;
+        game = null;
+        hand = null;
+        plays = null;
+        pending.clear();
     }
 
     public Game getGame() {
@@ -145,6 +149,14 @@ public class GamePlayController extends AbstractController {
         game = null;
         hand = null;
         plays = null;
+    }
+
+    public boolean isPlayedMove() {
+        return getGame().getCurrentRound().hasPlayed(getUser());
+    }
+
+    public Play getMyPlay() {
+        return getGame().getCurrentRound().playFor(getUser());
     }
 
     public List<WhiteCard> getPending() {

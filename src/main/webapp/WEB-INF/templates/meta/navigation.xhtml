@@ -17,11 +17,10 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="#"><h:outputText value="#{messages['appName']}"/></a>
+                    <h:link outcome="/index" value="#{messages.appName}" styleClass="navbar-brand"/>
                 </div>
                 <div class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
-                        <li><h:link outcome="/index" value="#{messages.home}"/></li>
                         <li><h:link outcome="/cardSet" value="#{messages.cardSet}"/></li>
                     </ul>
 
