@@ -4,14 +4,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+        >
 
     <ui:composition template="WEB-INF/templates/template-nonav.xhtml">
         <ui:define name="head"><title>Words with Attitude - Login</title></ui:define>
 
         <ui:define name="content">
             <div class="row">
-                <div class="col-md-3 col-xs-12">
+                <div class="col-md-6 col-xs-12">
                     <form id="standard_signin" action="login/authenticate" method="POST" role="form" class="form-horizontal">
                         <div class="form-group">
                             <label for="username"><h:outputText value="#{messages.username}"/></label>
@@ -32,29 +32,30 @@
 
                 </div>
 
-                <div class="col-md-3 col-xs-12">
+                <div class="col-md-6 col-xs-12">
                     <form id="tw_signin" action="signin/twitter" method="POST">
-                        <button type="submit" class="btn btn-twitter">
-                            <i class="fa fa-twitter"></i> | Connect with Twitter
-                        </button>
+                        <p>
+                            <button type="submit" class="btn btn-twitter">
+                                <i class="fa fa-twitter"></i> | Connect with Twitter
+                            </button>
+                        </p>
                     </form>
-                </div>
-
-                <div class="col-md-3 col-xs-12">
                     <form id="fb_signin" action="signin/facebook" method="POST">
-                        <button type="submit" class="btn btn-facebook">
-                            <i class="fa fa-facebook"></i> | Connect with Facebook
-                        </button>
+                        <p>
+                            <button type="submit" class="btn btn-facebook">
+                                <i class="fa fa-facebook"></i> | Connect with Facebook
+                            </button>
+                        </p>
+                    </form>
+                    <form id="li_signing" action="signin/linkedin" method="POST">
+                        <p>
+                            <button type="submit" class="btn btn-linkedin">
+                                <i class="fa fa-linkedin"></i> | Connect with LinkedIn
+                            </button>
+                        </p>
                     </form>
                 </div>
 
-                <div class="col-md-3 col-xs-12">
-                    <form id="li_signing" action="signin/linkedin" method="POST">
-                        <button type="submit" class="btn btn-linkedin">
-                            <i class="fa fa-linkedin"></i> | Connect with LinkedIn
-                        </button>
-                    </form>
-                </div>
             </div>
         </ui:define>
     </ui:composition>

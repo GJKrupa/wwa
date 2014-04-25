@@ -2,7 +2,7 @@ package uk.me.krupa.wwa.service.game;
 
 import uk.me.krupa.wwa.entity.cards.WhiteCard;
 import uk.me.krupa.wwa.entity.game.Game;
-import uk.me.krupa.wwa.entity.game.Player;
+import uk.me.krupa.wwa.entity.game.Play;
 import uk.me.krupa.wwa.entity.game.Round;
 import uk.me.krupa.wwa.entity.user.User;
 
@@ -26,4 +26,8 @@ public interface GameService {
     Game getGameById(long id);
 
     void playCards(User user, List<WhiteCard> card, Long gameId);
+
+    void startGame(Long id);
+
+    void chooseWinner(Long id, Play winningPlay);
 }

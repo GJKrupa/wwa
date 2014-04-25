@@ -4,13 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import uk.me.krupa.wwa.entity.game.Game;
-import uk.me.krupa.wwa.entity.game.Player;
 import uk.me.krupa.wwa.service.game.GameService;
 
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Created by krupagj on 21/04/2014.
@@ -56,7 +53,7 @@ public class GameManagerController extends AbstractController {
     }
 
     public String startGame() {
-        gameService.createNewRound(myGames.getRowData().getId());
+        gameService.startGame(myGames.getRowData().getId());
         gamePlayController.setGameId(myGames.getRowData().getId());
         return "/play";
     }

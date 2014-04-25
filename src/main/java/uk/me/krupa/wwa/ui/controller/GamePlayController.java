@@ -159,6 +159,16 @@ public class GamePlayController extends AbstractController {
         return getGame().getCurrentRound().playFor(getUser());
     }
 
+    public void selectWinner() {
+        Play winningPlay = plays.getRowData();
+        gameService.chooseWinner(game.getId(), winningPlay);
+
+        pending.clear();
+        game = null;
+        hand = null;
+        plays = null;
+    }
+
     public List<WhiteCard> getPending() {
         return pending;
     }

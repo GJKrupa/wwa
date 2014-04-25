@@ -11,6 +11,7 @@ import uk.me.krupa.wwa.entity.game.*;
 import uk.me.krupa.wwa.entity.user.User;
 import uk.me.krupa.wwa.repository.cards.CardRepository;
 import uk.me.krupa.wwa.repository.game.GameRepository;
+import uk.me.krupa.wwa.repository.game.PlayerRepository;
 
 import java.util.*;
 
@@ -29,6 +30,9 @@ public class GameServiceImpl implements GameService{
     private CardRepository cardRepository;
 
     @Autowired
+    private PlayerRepository playerRepository;
+
+    @Autowired
     private Neo4jTemplate neo4jTemplate;
 
     @Override
@@ -36,10 +40,7 @@ public class GameServiceImpl implements GameService{
     public Round createNewRound(long gameId) {
         Game game = gameRepository.findOne(gameId);
 
-        Round round = createRound(game);
-        selectBlackCard(game, round);
-        pickAdditionalCards(game, round);
-        game.setCurrentRound(round);
+        createNewRound(game);
 
         game = gameRepository.save(game);
         return game.getCurrentRound();
@@ -72,7 +73,7 @@ public class GameServiceImpl implements GameService{
         game.getBlackDeck().addAll(cardRepository.getBlackCardsInSet(cardSet));
         game.getWhiteDeck().addAll(cardRepository.getWhiteCardsInSet(cardSet));
 
-        game = gameRepository.save(game);
+        gameRepository.save(game);
     }
 
     @Override
@@ -95,19 +96,65 @@ public class GameServiceImpl implements GameService{
         Game game = gameRepository.findOne(gameId);
         Player player = game.getPlayerForUser(user);
 
+        player.getHand().removeAll(cards);
+
         Round currentRound = game.getCurrentRound();
         Play play = new Play();
         play.setCard1(cards.get(0));
         if (cards.size() > 1) {
-            play.setCard2(cards.get(2));
+            play.setCard2(cards.get(1));
         }
         if (cards.size() > 3) {
-            play.setCard3(cards.get(3));
+            play.setCard3(cards.get(2));
         }
         play.setPlayer(player);
         currentRound.getPlays().add(play);
 
+        playerRepository.save(player);
         gameRepository.save(game);
+    }
+
+    @Override
+    @Transactional
+    public void startGame(Long id) {
+        Game game = gameRepository.findOne(id);
+        createNewRound(game);
+        game.setState(GameState.IN_PROGRESS);
+        gameRepository.save(game);
+    }
+
+    @Override
+    @Transactional
+    public void chooseWinner(Long id, Play winningPlay) {
+        Game game = gameRepository.findOne(id);
+        putCardsInPack(game);
+        registerWinner(game, winningPlay);
+        createNewRound(game);
+        gameRepository.save(game);
+    }
+
+    private void registerWinner(Game game, Play winningPlay) {
+        game.getPlayers().stream()
+                .filter(p -> winningPlay.getPlayer().equals(p))
+                .findFirst()
+                .ifPresent(p -> {
+                    p.setScore(p.getScore() + 1);
+                    playerRepository.save(p);
+                });
+    }
+
+    private void putCardsInPack(Game game) {
+        game.getBlackDeck().add(game.getCurrentRound().getBlackCard());
+        game.getCurrentRound().getPlays().forEach(
+                p -> game.getWhiteDeck().addAll(p.getCardsAsList())
+        );
+    }
+
+    private void createNewRound(Game game) {
+        Round round = createRound(game);
+        selectBlackCard(game, round);
+        pickAdditionalCards(game, round);
+        game.setCurrentRound(round);
     }
 
     private void pickAdditionalCards(Game game, Round round) {
