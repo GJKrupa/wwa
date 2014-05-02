@@ -24,6 +24,9 @@ public class Round extends BaseEntity {
     private Set<Play> plays;
 
     @Fetch
+    private Play winningPlay;
+
+    @Fetch
     private Player czar;
 
     public Round getPrevious() {
@@ -73,5 +76,13 @@ public class Round extends BaseEntity {
                 .filter(p -> p.getPlayer().getUser().equals(user))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public Play getWinningPlay() {
+        return winningPlay;
+    }
+
+    public void setWinningPlay(Play winningPlay) {
+        this.winningPlay = winningPlay;
     }
 }

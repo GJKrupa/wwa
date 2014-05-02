@@ -6,10 +6,10 @@ import org.springframework.context.annotation.*;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.data.neo4j.aspects.config.Neo4jAspectConfiguration;
 import org.springframework.data.neo4j.aspects.support.node.Neo4jNodeBacking;
 import org.springframework.data.neo4j.aspects.support.relationship.Neo4jRelationshipBacking;
 import uk.me.krupa.wwa.entity.EntityConfig;
+import uk.me.krupa.wwa.lifecycle.LifecycleConfig;
 import uk.me.krupa.wwa.repository.RepositoryConfig;
 import uk.me.krupa.wwa.service.ServiceConfig;
 import uk.me.krupa.wwa.ui.controller.ControllerConfig;
@@ -23,7 +23,8 @@ import uk.me.krupa.wwa.ui.security.SpringSocialConfig;
         ControllerConfig.class,
         SecurityConfig.class,
         ServiceConfig.class,
-        SpringSocialConfig.class
+        SpringSocialConfig.class,
+        LifecycleConfig.class
 })
 @PropertySource("classpath:application.properties")
 @EnableAspectJAutoProxy

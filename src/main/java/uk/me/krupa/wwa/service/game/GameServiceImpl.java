@@ -12,6 +12,7 @@ import uk.me.krupa.wwa.entity.user.User;
 import uk.me.krupa.wwa.repository.cards.CardRepository;
 import uk.me.krupa.wwa.repository.game.GameRepository;
 import uk.me.krupa.wwa.repository.game.PlayerRepository;
+import uk.me.krupa.wwa.repository.game.RoundRepository;
 
 import java.util.*;
 
@@ -31,6 +32,9 @@ public class GameServiceImpl implements GameService{
 
     @Autowired
     private PlayerRepository playerRepository;
+
+    @Autowired
+    private RoundRepository roundRepository;
 
     @Autowired
     private Neo4jTemplate neo4jTemplate;
@@ -87,7 +91,9 @@ public class GameServiceImpl implements GameService{
     @Override
     @Transactional(readOnly = true)
     public Game getGameById(long id) {
-        return gameRepository.findOne(id);
+        Game game = gameRepository.findOne(id);
+        neo4jTemplate.fetch(game.getCurrentRound().getPrevious());
+        return game;
     }
 
     @Override
@@ -134,6 +140,8 @@ public class GameServiceImpl implements GameService{
     }
 
     private void registerWinner(Game game, Play winningPlay) {
+        game.getCurrentRound().setWinningPlay(winningPlay);
+        roundRepository.save(game.getCurrentRound());
         game.getPlayers().stream()
                 .filter(p -> winningPlay.getPlayer().equals(p))
                 .findFirst()

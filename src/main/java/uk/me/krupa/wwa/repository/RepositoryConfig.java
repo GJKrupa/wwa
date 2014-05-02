@@ -2,23 +2,15 @@ package uk.me.krupa.wwa.repository;
 
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
-import org.neo4j.graphdb.factory.GraphDatabaseSettings;
-import org.neo4j.kernel.EmbeddedGraphDatabase;
 import org.neo4j.kernel.GraphDatabaseAPI;
-import org.neo4j.kernel.impl.transaction.SpringTransactionManager;
 import org.neo4j.server.WrappingNeoServerBootstrapper;
 import org.neo4j.shell.ShellSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.aspects.config.Neo4jAspectConfiguration;
 import org.springframework.data.neo4j.config.EnableNeo4jRepositories;
-import org.springframework.data.neo4j.config.Neo4jConfiguration;
-import org.springframework.data.neo4j.rest.SpringRestGraphDatabase;
-import org.springframework.data.neo4j.support.Neo4jTemplate;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import javax.transaction.TransactionManager;
 
 /**
  * Created by krupagj on 21/03/2014.
@@ -38,14 +30,16 @@ public class RepositoryConfig extends Neo4jAspectConfiguration {
                 .newEmbeddedDatabaseBuilder(location)
                 .setConfig(ShellSettings.remote_shell_enabled, "true")
                 .newGraphDatabase();
-        new WrappingNeoServerBootstrapper(graphDatabaseService).start();
         return graphDatabaseService;
     }
 
-//    @Bean(name = "neo4jTemplate")
-//    @Autowired
-//    public Neo4jTemplate neo4jTemplate(GraphDatabaseService graphDatabaseService) {
-//        return new Neo4jTemplate(graphDatabaseService);
-//    }
+    @Bean(name = "wrappingNeoServerBootstrapper")
+    @Autowired
+    public WrappingNeoServerBootstrapper wrappingNeoServerBootstrapper(GraphDatabaseService graphDatabaseService) {
+        WrappingNeoServerBootstrapper wrappingNeoServerBootstrapper = new WrappingNeoServerBootstrapper(
+                (GraphDatabaseAPI) graphDatabaseService);
+        wrappingNeoServerBootstrapper.start();
+        return wrappingNeoServerBootstrapper;
+    }
 
 }

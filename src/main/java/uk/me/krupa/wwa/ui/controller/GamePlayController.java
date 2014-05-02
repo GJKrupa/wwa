@@ -1,27 +1,25 @@
 package uk.me.krupa.wwa.ui.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import uk.me.krupa.wwa.entity.cards.WhiteCard;
 import uk.me.krupa.wwa.entity.game.Game;
 import uk.me.krupa.wwa.entity.game.Play;
 import uk.me.krupa.wwa.entity.game.Player;
+import uk.me.krupa.wwa.entity.user.User;
 import uk.me.krupa.wwa.service.game.GameService;
 
-import javax.faces.bean.ViewScoped;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * Created by krupagj on 22/04/2014.
  */
 @Controller("gamePlayController")
-@ViewScoped
+@Scope("session")
 public class GamePlayController extends AbstractController {
 
     private static final String GAME_ID = GamePlayController.class.getName() + ".gameId";
@@ -32,6 +30,7 @@ public class GamePlayController extends AbstractController {
     private transient Game game;
     private transient DataModel<WhiteCard> hand;
     private transient DataModel<Play> plays;
+    private transient DataModel<Play> previousRoundPlays;
 
     private List<WhiteCard> pending = new ArrayList<>(3);
     private ListDataModel<WhiteCard> pendingModel = new ListDataModel<>(pending);
@@ -99,6 +98,37 @@ public class GamePlayController extends AbstractController {
         return replacePlaceholders(getGame().getCurrentRound().getBlackCard().getText(), play);
     }
 
+    public boolean isPreviousRoundAvailable() {
+        return getGame().getCurrentRound() != null && getGame().getCurrentRound().getPrevious() != null;
+    }
+
+    public User getPreviousRoundWinner() {
+            return getGame().getCurrentRound().getPrevious().getWinningPlay().getPlayer().getUser();
+    }
+
+    public DataModel<Play> getPreviousRoundPlays() {
+        if (previousRoundPlays == null) {
+            List<Play> playList;
+            if (getGame().getCurrentRound().getPrevious() == null) {
+                playList = Collections.emptyList();
+            } else {
+                Set<Play> plays = getGame().getCurrentRound().getPrevious().getPlays();
+                playList = Collections.unmodifiableList(new ArrayList<>(plays));
+            }
+            previousRoundPlays = new ListDataModel<>(playList);
+        }
+        return previousRoundPlays;
+    }
+
+    public String getPreviousRoundPlayText() {
+        if (previousRoundPlays.isRowAvailable()) {
+            return replacePlaceholders(getGame().getCurrentRound().getPrevious().getBlackCard().getText(),
+                    previousRoundPlays.getRowData());
+        } else {
+            return "ERROR!";
+        }
+    }
+
     private String replacePlaceholders(String text, Play play) {
         List<String> data = new ArrayList<>();
         data.add(play.getCard1().getText());
@@ -145,10 +175,15 @@ public class GamePlayController extends AbstractController {
         if (pending.size() == getGame().getCurrentRound().getBlackCard().getPlayCount()) {
             gameService.playCards(getUser(), pending, game.getId());
         }
+        clearRoundData();
+    }
+
+    public void clearRoundData() {
         pending.clear();
         game = null;
         hand = null;
         plays = null;
+        previousRoundPlays = null;
     }
 
     public boolean isPlayedMove() {
@@ -162,11 +197,7 @@ public class GamePlayController extends AbstractController {
     public void selectWinner() {
         Play winningPlay = plays.getRowData();
         gameService.chooseWinner(game.getId(), winningPlay);
-
-        pending.clear();
-        game = null;
-        hand = null;
-        plays = null;
+        clearRoundData();
     }
 
     public List<WhiteCard> getPending() {

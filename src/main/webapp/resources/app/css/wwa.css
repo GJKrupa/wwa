@@ -56,7 +56,21 @@ ul.userList li img {
     padding-right: 5px;
 }
 
-.navbar img {
+.navbar img, .previous-round img {
     max-height: 14pt;
     padding-right: 5px;
+}
+
+.previous-round {
+    border: double #000000 thick;
+    background: #f5f5f5;
+}
+
+.previous-round dd {
+    margin-left: 20px;
+}
+
+.previous-round .winner {
+    padding: 10px;
+    background: lightgreen;
 }
