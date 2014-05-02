@@ -9,6 +9,11 @@ repositories {
     maven { url "http://maven.springframework.org/milestone/" }
     maven { url "http://repo.opensourceagility.com/releases" }
     maven { url 'http://m2.neo4j.org/content/repositories/releases/' }
+    maven { url './lib/' }
+}
+
+war {
+    baseName 'wwa'
 }
 
 configurations {

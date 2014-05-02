@@ -1,0 +1,1 @@
+Built from https://github.com/socialsignin/spring-social-security on 2014-05-02 at 16:50PM BST
