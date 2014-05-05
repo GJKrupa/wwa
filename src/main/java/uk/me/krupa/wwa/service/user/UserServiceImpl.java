@@ -21,7 +21,7 @@ import java.util.logging.Logger;
  * Created by krupagj on 19/03/2014.
  */
 @Service("springSocialSecurityUserDetailsService")
-public class UserServiceImpl implements UserService, UserDetailsService, SocialUserDetailsService {
+public class UserServiceImpl implements UserService, SocialUserDetailsService {
 
     private static final Logger LOGGER = Logger.getLogger(UserServiceImpl.class.getName());
 
@@ -51,7 +51,11 @@ public class UserServiceImpl implements UserService, UserDetailsService, SocialU
     @Transactional(readOnly = true)
     public User loadByUsername(String username) {
         LOGGER.info("Loading user " + username);
-        return userDetailsRepository.findByUsername(username);
+        User user = userDetailsRepository.findByUsername(username);
+        if (user.getPassword() == null) {
+            user.setPassword(user.getUserId());
+        }
+        return user;
     }
 
     @Override

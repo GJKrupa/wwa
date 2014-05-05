@@ -4,7 +4,6 @@ import org.socialsignin.springsocial.security.signin.SpringSocialSecurityAuthent
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -14,18 +13,17 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
+import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.session.ChangeSessionIdAuthenticationStrategy;
-import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
 import org.springframework.social.UserIdSource;
 import org.springframework.social.security.AuthenticationNameUserIdSource;
-import org.springframework.social.security.SocialAuthenticationFilter;
 import org.springframework.social.security.SpringSocialConfigurer;
 import uk.me.krupa.wwa.service.user.UserService;
 
@@ -34,6 +32,10 @@ import java.util.Collections;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private static final String REMEMBER_ME_KEY = "THEWINDANDTHERAIN";
+    private static final int REMEMBER_ME_DURATION = 60 * 60 * 24 * 30;
+    private static final String REMEMBER_ME_COOKIE_NAME = "GDJEIEMAJD";
 
     @Autowired
     private UserService userService;
@@ -44,6 +46,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .csrf()
                     .disable()
+                .rememberMe()
+                    .key(REMEMBER_ME_KEY)
+                    .tokenValiditySeconds(REMEMBER_ME_DURATION)
+                    .rememberMeServices(rememberMeServices())
+                .and()
                 .formLogin()
                     .loginPage("/login.xhtml")
                     .loginProcessingUrl("/login/authenticate")
@@ -53,7 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .addFilterBefore(springSocialSecurityAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .logout()
-                    .deleteCookies("JSESSIONID")
+                    .deleteCookies("JSESSIONID", REMEMBER_ME_COOKIE_NAME)
                     .logoutUrl("/logout")
                     .logoutSuccessUrl("/login.xhtml")
                 .and()
@@ -104,7 +111,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public SpringSocialSecurityAuthenticationFilter springSocialSecurityAuthenticationFilter() {
         SpringSocialSecurityAuthenticationFilter filter = new SpringSocialSecurityAuthenticationFilter();
         filter.setSessionAuthenticationStrategy(new ChangeSessionIdAuthenticationStrategy());
+        filter.setRememberMeServices(rememberMeServices());
         return filter;
+    }
+
+    @Bean
+    public RememberMeServices rememberMeServices() {
+        TokenBasedRememberMeServices rememberMeServices = new TokenBasedRememberMeServices(REMEMBER_ME_KEY, userService);
+        rememberMeServices.setAlwaysRemember(true);
+        rememberMeServices.setTokenValiditySeconds(REMEMBER_ME_DURATION);
+        rememberMeServices.setCookieName(REMEMBER_ME_COOKIE_NAME);
+        return rememberMeServices;
     }
 
     @Bean

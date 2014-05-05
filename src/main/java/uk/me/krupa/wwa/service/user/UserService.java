@@ -16,7 +16,7 @@ import uk.me.krupa.wwa.repository.user.UserDetailsRepository;
 
 import java.util.Collections;
 
-public interface UserService {
+public interface UserService extends UserDetailsService {
 
     User saveUser(User user);
     User loadByUsername(String username);
