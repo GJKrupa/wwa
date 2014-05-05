@@ -33,6 +33,8 @@ dependencies {
 
     compile group: 'org.springframework', name: 'spring-beans', version: springVersion
     compile group: 'org.springframework', name: 'spring-web', version: springVersion
+    compile group: 'org.springframework', name: 'spring-websocket', version: springVersion
+    compile group: 'org.springframework', name: 'spring-messaging', version: springVersion
 
     compile group: 'org.springframework.social', name: 'spring-social-twitter', version: springSocialVersion
     compile group: 'org.springframework.social', name: 'spring-social-facebook', version: springSocialVersion

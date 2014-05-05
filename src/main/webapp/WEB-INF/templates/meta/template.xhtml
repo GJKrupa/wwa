@@ -10,7 +10,6 @@
         <h:outputStylesheet library="app" name="css/wwa.css"/>
         <h:outputStylesheet library="font-awesome" name="css/font-awesome.min.css"/>
         <h:outputStylesheet library="font-awesome" name="css/social-buttons.css"/>
-        <script type="text/javascript" src="http://uxian2.cloudapp.net:8080/s/d41d8cd98f00b204e9800998ecf8427e/en_UKrkgfaq-1988229788/6261/4/1.4.7/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?collectorId=5a3a8a3a"></script>
         <ui:insert name="head"/>
     </h:head>
 
@@ -19,6 +18,11 @@
 
         <h:outputScript library="jquery" name="jquery-1.11.0.min.js"/>
         <h:outputScript library="bootstrap" name="js/bootstrap.min.js"/>
+        <script type="text/javascript" src="http://uxian2.cloudapp.net:8080/s/d41d8cd98f00b204e9800998ecf8427e/en_UKrkgfaq-1988229788/6261/4/1.4.7/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?collectorId=5a3a8a3a"></script>
+        <script type="text/javascript" src="http://cdn.sockjs.org/sockjs-0.3.min.js"></script>
+        <h:outputScript library="stomp" name="stomp.min.js"/>
+
+        <ui:insert name="scripts"/>
     </h:body>
     
 </html>

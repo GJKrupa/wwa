@@ -15,6 +15,7 @@ import uk.me.krupa.wwa.service.ServiceConfig;
 import uk.me.krupa.wwa.ui.controller.ControllerConfig;
 import uk.me.krupa.wwa.ui.security.SecurityConfig;
 import uk.me.krupa.wwa.ui.security.SpringSocialConfig;
+import uk.me.krupa.wwa.ui.sockets.WebSocketConfig;
 
 @Configuration
 @Import({
@@ -24,6 +25,7 @@ import uk.me.krupa.wwa.ui.security.SpringSocialConfig;
         SecurityConfig.class,
         ServiceConfig.class,
         SpringSocialConfig.class,
+        WebSocketConfig.class,
         LifecycleConfig.class
 })
 @PropertySource("classpath:application.properties")

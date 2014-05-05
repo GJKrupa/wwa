@@ -3,8 +3,7 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-        >
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <ui:composition template="WEB-INF/templates/template-nav.xhtml">
 
@@ -123,6 +122,24 @@
                     </div>
                 </h:panelGroup>
             </div>
+        </ui:define>
+
+        <ui:define name="scripts">
+            <script language="javascript" type="text/javascript">
+                $(function() {
+                    var socket = new SockJS("/wwa-1.0/game");
+                    var stompClient = Stomp.over(socket);
+                    stompClient.connect('fred', 'fred', function() {
+                        stompClient.subscribe('/topic/game/#{gamePlayController.gameId}', function(message) {
+                            if ($('#votingForm').size() != 0 &amp;&amp; message.body == '"PLAYED"') {
+                                $('#refreshForm .btn').click();
+                            } else if (message.body == '"JUDGED"') {
+                                $('#refreshForm .btn').click();
+                            }
+                        })
+                    });
+                });
+            </script>
         </ui:define>
     </ui:composition>
 

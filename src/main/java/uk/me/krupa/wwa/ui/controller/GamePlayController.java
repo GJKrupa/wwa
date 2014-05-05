@@ -2,6 +2,7 @@ package uk.me.krupa.wwa.ui.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import uk.me.krupa.wwa.entity.cards.WhiteCard;
 import uk.me.krupa.wwa.entity.game.Game;
@@ -22,10 +23,11 @@ import java.util.stream.Collectors;
 @Scope("session")
 public class GamePlayController extends AbstractController {
 
-    private static final String GAME_ID = GamePlayController.class.getName() + ".gameId";
-
     @Autowired
     private transient GameService gameService;
+
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     private transient Game game;
     private transient DataModel<WhiteCard> hand;
@@ -43,15 +45,20 @@ public class GamePlayController extends AbstractController {
 
     public void setGameId(long gameId) {
         this.gameId = gameId;
-        game = null;
-        hand = null;
-        plays = null;
-        pending.clear();
+        clearRoundData();
     }
 
     public Game getGame() {
         if (game == null) {
             game = gameService.getGameById(getGameId());
+
+            new Thread(() -> {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }).start();
         }
         return game;
     }
@@ -140,7 +147,9 @@ public class GamePlayController extends AbstractController {
         }
 
         for (String value: data) {
-            text = text.replaceFirst("_", value);
+            if (text.contains("_")) {
+                text = text.replace("_", value);
+            }
         }
         return text;
     }
@@ -175,6 +184,8 @@ public class GamePlayController extends AbstractController {
         if (pending.size() == getGame().getCurrentRound().getBlackCard().getPlayCount()) {
             gameService.playCards(getUser(), pending, game.getId());
         }
+        System.err.println("/topic/game/" + gameId);
+        simpMessagingTemplate.convertAndSend("/topic/game/" + gameId, "PLAYED");
         clearRoundData();
     }
 
@@ -197,6 +208,8 @@ public class GamePlayController extends AbstractController {
     public void selectWinner() {
         Play winningPlay = plays.getRowData();
         gameService.chooseWinner(game.getId(), winningPlay);
+        System.err.println("/topic/game/" + gameId);
+        simpMessagingTemplate.convertAndSend("/topic/game/" + gameId, "JUDGED");
         clearRoundData();
     }
 
