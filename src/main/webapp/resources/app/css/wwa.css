@@ -1,7 +1,6 @@
 .card {
     width: 250px;
     min-width: 250px;
-    height: 250px;
     min-height: 250px;
     border-radius: 1em;
     padding: 20px 20px 20px 20px;
@@ -71,6 +70,10 @@ ul.userList li img {
 }
 
 .previous-round .winner {
-    padding: 10px;
     background: lightgreen;
+}
+
+.list-group-item-disabled {
+    color: #808080;
+    background-color: lightgrey;
 }

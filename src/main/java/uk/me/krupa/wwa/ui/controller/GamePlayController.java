@@ -8,12 +8,16 @@ import uk.me.krupa.wwa.entity.cards.WhiteCard;
 import uk.me.krupa.wwa.entity.game.Game;
 import uk.me.krupa.wwa.entity.game.Play;
 import uk.me.krupa.wwa.entity.game.Player;
+import uk.me.krupa.wwa.entity.game.Round;
 import uk.me.krupa.wwa.entity.user.User;
 import uk.me.krupa.wwa.service.game.GameService;
 
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -32,10 +36,9 @@ public class GamePlayController extends AbstractController {
     private transient Game game;
     private transient DataModel<WhiteCard> hand;
     private transient DataModel<Play> plays;
-    private transient DataModel<Play> previousRoundPlays;
+    private transient DataModel<Player> players;
 
     private List<WhiteCard> pending = new ArrayList<>(3);
-    private ListDataModel<WhiteCard> pendingModel = new ListDataModel<>(pending);
 
     private long gameId;
 
@@ -51,17 +54,10 @@ public class GamePlayController extends AbstractController {
     public Game getGame() {
         if (game == null) {
             game = gameService.getGameById(getGameId());
-
-            new Thread(() -> {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }).start();
         }
         return game;
     }
+
 
     public DataModel<WhiteCard> getMyHand() {
         if (hand == null) {
@@ -113,26 +109,13 @@ public class GamePlayController extends AbstractController {
             return getGame().getCurrentRound().getPrevious().getWinningPlay().getPlayer().getUser();
     }
 
-    public DataModel<Play> getPreviousRoundPlays() {
-        if (previousRoundPlays == null) {
-            List<Play> playList;
-            if (getGame().getCurrentRound().getPrevious() == null) {
-                playList = Collections.emptyList();
-            } else {
-                Set<Play> plays = getGame().getCurrentRound().getPrevious().getPlays();
-                playList = Collections.unmodifiableList(new ArrayList<>(plays));
-            }
-            previousRoundPlays = new ListDataModel<>(playList);
-        }
-        return previousRoundPlays;
-    }
-
-    public String getPreviousRoundPlayText() {
-        if (previousRoundPlays.isRowAvailable()) {
-            return replacePlaceholders(getGame().getCurrentRound().getPrevious().getBlackCard().getText(),
-                    previousRoundPlays.getRowData());
+    public String getPendingText() {
+        Play play = getGame().getCurrentRound().playFor(getUser());
+        if (play == null) {
+            return replacePlaceholders(getGame().getCurrentRound().getBlackCard().getText(),
+                    pending.stream().map(card -> card.getText()).collect(Collectors.toList()));
         } else {
-            return "ERROR!";
+            return replacePlaceholders(getGame().getCurrentRound().getBlackCard().getText(), play);
         }
     }
 
@@ -145,10 +128,14 @@ public class GamePlayController extends AbstractController {
         if (play.getCard3() != null) {
             data.add(play.getCard3().getText());
         }
+        return replacePlaceholders(text, data);
+    }
 
+    private String replacePlaceholders(String text, List<String> data) {
         for (String value: data) {
             if (text.contains("_")) {
-                text = text.replace("_", value);
+                int index = text.indexOf('_');
+                text = text.substring(0, index) + value + text.substring(index+1);
             }
         }
         return text;
@@ -156,6 +143,10 @@ public class GamePlayController extends AbstractController {
 
     public boolean isCanPlay() {
         return pending.size() < getGame().getCurrentRound().getBlackCard().getPlayCount();
+    }
+
+    public boolean isCanClear() {
+        return !pending.isEmpty();
     }
 
     public boolean isAlreadyPlayed() {
@@ -173,11 +164,8 @@ public class GamePlayController extends AbstractController {
         }
     }
 
-    public void removeCard() {
-        int index = pendingModel.getRowIndex();
-        if (index >= 0 && index < pending.size()) {
-            pending.remove(index);
-        }
+    public void clearPending() {
+        pending.clear();
     }
 
     public void commitPlay() {
@@ -194,7 +182,7 @@ public class GamePlayController extends AbstractController {
         game = null;
         hand = null;
         plays = null;
-        previousRoundPlays = null;
+        players = null;
     }
 
     public boolean isPlayedMove() {
@@ -221,11 +209,38 @@ public class GamePlayController extends AbstractController {
         this.pending = pending;
     }
 
-    public ListDataModel<WhiteCard> getPendingModel() {
-        return pendingModel;
+    public DataModel<Player> getPlayers() {
+        if (players == null) {
+            players = new ListDataModel<>(getGame().getPlayerList());
+        }
+        return players;
     }
 
-    public void setPendingModel(ListDataModel<WhiteCard> pendingModel) {
-        this.pendingModel = pendingModel;
+    public String getPreviousRoundPlayText() {
+        if (players.isRowAvailable()) {
+            String pattern = getGame().getCurrentRound().getPrevious().getBlackCard().getText();
+
+            Play play = getGame().getCurrentRound().getPrevious().playFor(players.getRowData().getUser());
+            if (play == null) {
+                return null;
+            } else {
+                return replacePlaceholders(pattern, play);
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public String getPlayStyle() {
+        Round previous = getGame().getCurrentRound().getPrevious();
+        Play play = previous.playFor(players.getRowData().getUser());
+        if (play == null) {
+            return "list-group-item-disabled";
+        }
+        if (previous.getWinningPlay().equals(play)) {
+            return "list-group-item-success";
+        } else {
+            return "";
+        }
     }
 }

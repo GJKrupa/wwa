@@ -24,7 +24,7 @@
 
                     <div class="card blackCard">
                         <div class="title">
-                            <h:outputText value="#{gamePlayController.game.currentRound.blackCard.text}"/>
+                            <h:outputText value="#{gamePlayController.pendingText}"/>
                         </div>
                         <h:panelGroup styleClass="pick" rendered="#{gamePlayController.game.currentRound.blackCard.playCount gt 1}">
                             <div>
@@ -35,54 +35,52 @@
                             </h:panelGroup>
                         </h:panelGroup>
                     </div>
-
-                    <h:panelGroup rendered="#{gamePlayController.playedMove}">
-                        <ui:repeat value="#{gamePlayController.myPlay.cardsAsList}" var="card">
-                            <div class="card whiteCard">
-                                <div class="title">
-                                    <h:outputText value="#{card.text}"/>
-                                </div>
-                            </div>
-                        </ui:repeat>
-                    </h:panelGroup>
-
-                    <h:form id="removeCardForm">
-                        <ui:repeat value="#{gamePlayController.pendingModel}" var="card">
-                            <h:commandLink action="#{gamePlayController.removeCard}">
-                                <div class="card whiteCard">
-                                    <div class="title">
-                                        <h:outputText value="#{card.text}"/>
-                                    </div>
-                                </div>
-                            </h:commandLink>
-                        </ui:repeat>
-                    </h:form>
                 </div>
 
-                <h:panelGroup rendered="#{gamePlayController.previousRoundAvailable}">
-                    <div class="col-md-4 previous-round">
-                        <h3><h:outputText value="#{messages.previousRound}"/></h3>
+                <h:panelGroup rendered="#{gamePlayController.previousRoundAvailable}" layout="block" styleClass="col-md-4">
+                    <h3><h:outputText value="#{messages.previousRound}"/></h3>
+                    <div class="previous-round list-group">
+                        <ui:repeat value="#{gamePlayController.players}" var="player">
+                            <div class="list-group-item #{gamePlayController.playStyle}">
+                                <h4 class="list-group-item-heading #{gamePlayController.playStyle}">
+                                    <img src="#{player.user.imageUrl}" alt="avatar"/> <h:outputText value="#{player.user.fullName}: "/>
+                                    (<h:outputText value="#{player.score}"/>)
+                                </h4>
+                                <p class="list-group-item-text">
+                                    <h:outputText value="#{gamePlayController.previousRoundPlayText}" rendered="#{gamePlayController.previousRoundPlayText != null}" styleClass="#{gamePlayController.playStyle}" />
 
-                        <p class="winner">
-                            <h:outputText value="#{messages.winner}: "/>
-                            <img src="#{gamePlayController.previousRoundWinner.imageUrl}" alt="avatar"/>
-                            <h:outputText value=" #{gamePlayController.previousRoundWinner.fullName}"/>
-                        </p>
-
-                        <dl>
-                            <ui:repeat value="#{gamePlayController.previousRoundPlays}" var="play">
-                                <dt><img src="#{play.player.user.imageUrl}" alt="avatar"/> <h:outputText value="#{play.player.user.fullName}: "/></dt>
-                                <dd><h:outputText value="#{gamePlayController.previousRoundPlayText}"/></dd>
-                            </ui:repeat>
-                        </dl>
+                                    <h:panelGroup rendered="#{gamePlayController.previousRoundPlayText == null}" styleClass="czar">
+                                        <h:outputText value=" #{messages.czar} "/>
+                                    </h:panelGroup>
+                                </p>
+                            </div>
+                        </ui:repeat>
                     </div>
                 </h:panelGroup>
 
-                <h:panelGroup rendered="#{!gamePlayController.czar and !gamePlayController.playedMove}">
+            </div>
+
+            <div class="row">
+
+                <h:panelGroup rendered="#{!gamePlayController.playedMove and !gamePlayController.czar and (gamePlayController.canClear or !gamePlayController.canPlay)}" layout="block" styleClass="col-md-12">
+                    <h:form id="commitForm">
+                        <p>
+                            <h:commandLink action="#{gamePlayController.commitPlay}" styleClass="btn btn-primary" rendered="#{!gamePlayController.canPlay}">
+                                <i class="fa fa-upload"></i> | <h:outputText value="#{messages.playSelectedCards}"/>
+                            </h:commandLink>
+                            &nbsp;
+                            <h:commandLink action="#{gamePlayController.clearPending}" styleClass="btn btn-warning" rendered="#{gamePlayController.canClear}">
+                                <i class="fa fa-trash-o"></i> | <h:outputText value="#{messages.clear}"/>
+                            </h:commandLink>
+                        </p>
+                    </h:form>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{!gamePlayController.czar and !gamePlayController.playedMove}" styleClass="col-md-12">
                     <div class="col-md-12">
                         <h:form id="playCardForm">
                             <ui:repeat value="#{gamePlayController.myHand}" var="card">
-                                <h:commandLink action="#{gamePlayController.playCard}"  rendered="#{gamePlayController.canPlay and !gamePlayController.alreadyPlayed}">
+                                <h:commandLink action="#{gamePlayController.playCard}" rendered="#{gamePlayController.canPlay and !gamePlayController.alreadyPlayed}">
                                     <div class="card whiteCard">
                                         <div class="title">
                                             <h:outputText value="#{card.text}"/>
@@ -90,19 +88,15 @@
                                     </div>
                                 </h:commandLink>
                             </ui:repeat>
-
-                            <h:panelGroup rendered="#{gamePlayController.canSubmit}">
-                                <p>
-                                    <h:commandLink action="#{gamePlayController.commitPlay}" styleClass="btn btn-info">
-                                        <i class="fa fa-upload"></i> | <h:outputText value="#{messages.playSelectedCards}"/>
-                                    </h:commandLink>
-                                </p>
-                            </h:panelGroup>
                         </h:form>
                     </div>
                 </h:panelGroup>
 
-                <h:panelGroup rendered="#{gamePlayController.czar}">
+            </div>
+
+            <div class="row">
+
+                <h:panelGroup rendered="#{gamePlayController.czar}" styleClass="col-md-12">
                     <div class="col-md-12">
                         <h:form id="votingForm">
                             <ui:repeat value="#{gamePlayController.plays}" var="play">
@@ -127,7 +121,7 @@
         <ui:define name="scripts">
             <script language="javascript" type="text/javascript">
                 $(function() {
-                    var socket = new SockJS("/wwa-1.0/game");
+                    var socket = new SockJS("/game");
                     var stompClient = Stomp.over(socket);
                     stompClient.connect('fred', 'fred', function() {
                         stompClient.subscribe('/topic/game/#{gamePlayController.gameId}', function(message) {

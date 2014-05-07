@@ -51,7 +51,7 @@
                                     </ul>
 
                                     <p>
-                                        <h:commandLink action="#{gameManagerController.openGame}" styleClass="btn btn-info">
+                                        <h:commandLink action="#{gameManagerController.openGame}" styleClass="btn btn-info" rendered="#{game.state == 'IN_PROGRESS'}">
                                             <i class="fa fa-folder-open"></i> | <h:outputText value="#{messages.open}"/>
                                         </h:commandLink>
 
@@ -68,9 +68,9 @@
                 <div class="col-md-6">
                     <h2><h:outputText value="#{messages.availableGames}"/></h2>
                     <h:form id="openGame">
-                    <ul class="list-group">
+                    <div class="list-group">
                         <ui:repeat value="#{gameManagerController.openGames}" var="game">
-                            <li class="list-group-item">
+                            <div class="list-group-item">
                                 <span class="badge"><h:outputText value="#{game.playerCount}"/></span>
                                 <h4 class="list-group-item-heading"><h:outputText value="#{game.name}"/></h4>
                                 <p>
@@ -81,9 +81,9 @@
                                         <i class="fa fa-users"></i> | <h:outputText value="#{messages.join}"/>
                                     </h:commandLink>
                                 </p>
-                            </li>
+                            </div>
                         </ui:repeat>
-                    </ul>
+                    </div>
                     </h:form>
                 </div>
 
@@ -94,7 +94,7 @@
         <ui:define name="scripts">
             <script language="javascript" type="text/javascript">
                 $(function() {
-                    var socket = new SockJS("/wwa-1.0/game");
+                    var socket = new SockJS("/game");
                     var stompClient = Stomp.over(socket);
                     stompClient.connect('fred', 'fred', function() {
                         stompClient.send('/app/demo', {}, '"BLAHBLAH"');
