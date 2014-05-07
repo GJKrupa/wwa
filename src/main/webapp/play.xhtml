@@ -76,44 +76,40 @@
                     </h:form>
                 </h:panelGroup>
 
-                <h:panelGroup rendered="#{!gamePlayController.czar and !gamePlayController.playedMove}" styleClass="col-md-12">
-                    <div class="col-md-12">
-                        <h:form id="playCardForm">
-                            <ui:repeat value="#{gamePlayController.myHand}" var="card">
-                                <h:commandLink action="#{gamePlayController.playCard}" rendered="#{gamePlayController.canPlay and !gamePlayController.alreadyPlayed}">
-                                    <div class="card whiteCard">
-                                        <div class="title">
-                                            <h:outputText value="#{card.text}"/>
-                                        </div>
+                <h:panelGroup rendered="#{!gamePlayController.czar and !gamePlayController.playedMove}" styleClass="col-md-12" layout="block">
+                    <h:form id="playCardForm">
+                        <ui:repeat value="#{gamePlayController.myHand}" var="card">
+                            <h:commandLink action="#{gamePlayController.playCard}" rendered="#{gamePlayController.canPlay and !gamePlayController.alreadyPlayed}">
+                                <div class="card whiteCard">
+                                    <div class="title">
+                                        <h:outputText value="#{card.text}"/>
                                     </div>
-                                </h:commandLink>
-                            </ui:repeat>
-                        </h:form>
-                    </div>
+                                </div>
+                            </h:commandLink>
+                        </ui:repeat>
+                    </h:form>
                 </h:panelGroup>
 
             </div>
 
             <div class="row">
 
-                <h:panelGroup rendered="#{gamePlayController.czar}" styleClass="col-md-12">
-                    <div class="col-md-12">
-                        <h:form id="votingForm">
-                            <ui:repeat value="#{gamePlayController.plays}" var="play">
-                                <div class="card blackCard">
-                                    <div class="title">
-                                        <h:outputText value="#{gamePlayController.play}"/>
-                                    </div>
-
-                                    <h:panelGroup styleClass="pick" layout="block" rendered="#{gamePlayController.allPlayed}">
-                                        <h:commandLink action="#{gamePlayController.selectWinner}" styleClass="btn btn-info">
-                                            <i class="fa fa-thumbs-o-up"></i> | <h:outputText value="#{messages.winner}"/>
-                                        </h:commandLink>
-                                    </h:panelGroup>
+                <h:panelGroup rendered="#{gamePlayController.czar}" styleClass="col-md-12" layout="block">
+                    <h:form id="votingForm">
+                        <ui:repeat value="#{gamePlayController.plays}" var="play">
+                            <div class="card blackCard">
+                                <div class="title">
+                                    <h:outputText value="#{gamePlayController.play}"/>
                                 </div>
-                            </ui:repeat>
-                        </h:form>
-                    </div>
+
+                                <h:panelGroup styleClass="pick" layout="block" rendered="#{gamePlayController.allPlayed}">
+                                    <h:commandLink action="#{gamePlayController.selectWinner}" styleClass="btn btn-info">
+                                        <i class="fa fa-thumbs-o-up"></i> | <h:outputText value="#{messages.winner}"/>
+                                    </h:commandLink>
+                                </h:panelGroup>
+                            </div>
+                        </ui:repeat>
+                    </h:form>
                 </h:panelGroup>
             </div>
         </ui:define>

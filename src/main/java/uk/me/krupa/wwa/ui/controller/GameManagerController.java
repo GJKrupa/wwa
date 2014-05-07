@@ -69,6 +69,16 @@ public class GameManagerController extends AbstractController {
         }
     }
 
+    public boolean isYourTurn() {
+        Game game = myGames.getRowData();
+
+        if (getUser().equals(game.getCurrentRound().getCzar().getUser())) {
+            return game.getCurrentRound().getPlays().size() == game.getPlayers().size() - 1;
+        } else {
+            return game.getCurrentRound().playFor(getUser()) == null;
+        }
+    }
+
     public boolean isMyGame() {
         return myGames.getRowData().getOwner().getUser().equals(getUser());
     }

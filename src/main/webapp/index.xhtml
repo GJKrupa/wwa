@@ -30,7 +30,9 @@
                         <ul class="list-group">
                             <ui:repeat value="#{gameManagerController.myGames}" var="game">
                                 <li class="list-group-item">
-                                    <span class="badge"><h:outputText value="#{game.playerCount}"/></span>
+                                    <h:panelGroup styleClass="label label-success pull-right" rendered="#{gameManagerController.yourTurn}">
+                                        <h:outputText value="#{messages.yourTurn}"/>
+                                    </h:panelGroup>
                                     <h4 class="list-group-item-heading"><h:outputText value="#{game.name}"/></h4>
                                     <p class="list-group-item-text">
                                         <h:outputText value="#{messages.owner}"/>:
