@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+        >
+
+    <ui:composition template="templates/template-nav.xhtml">
+        <ui:define name="head"><title><h:outputText value="#{messages.appName}"/></title></ui:define>
+
+        <ui:define name="content">
+            <div data-role="tabs" id="tabs">
+                <div data-role="navbar">
+                    <ul>
+                        <li><a href="#myGames" data-ajax="false"><h:outputText value="#{messages.myGames}"/></a></li>
+                        <li><a href="#openGames" data-ajax="false"><h:outputText value="#{messages.availableGames}"/></a></li>
+                        <li><a href="#newGame" data-ajax="false"><h:outputText value="#{messages.createNewGame}"/></a></li>
+                    </ul>
+                </div>
+                <div id="myGames" class="ui-body-d ui-content">
+                    <h2><h:outputText value="#{messages.myGames}"/></h2>
+                    <h:form id="myGame">
+                        <ul data-role="listview" data-inset="true">
+                            <ui:repeat value="#{gameManagerController.myGames}" var="game">
+
+                                <li data-role="list-divider">
+                                    <h:outputText value="#{game.name}"/>
+                                    <h:panelGroup rendered="#{gameManagerController.yourTurn}">
+                                        <span class="ui-li-count"><h:outputText value="#{messages.yourTurn}" /></span>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{gameManagerController.myGame and game.playerCount gt 2 and game.currentRound == null}">
+                                        <span class="ui-li-count"><h:outputText value="#{messages.youCanStart}"/></span>
+                                    </h:panelGroup>
+                                </li>
+
+                                <li>
+                                    <div data-role="popup" id="popup#{game.id}" data-theme="a" data-overlay-theme="b" class="ui-content" >
+                                        <h:panelGroup rendered="#{gameManagerController.myGame and game.playerCount gt 2 and game.currentRound == null}">
+                                            <h2><h:outputText value="#{messages.startGame}"/></h2>
+                                            <p><h:outputText value="#{messages.noMorePlayers}"/></p>
+                                            <h:commandLink action="#{gameManagerController.startGame}" styleClass="ui-btn">
+                                                <i class="fa fa-check-circle"></i> | <h:outputText value="#{messages.start}"/>
+                                            </h:commandLink>
+                                        </h:panelGroup>
+
+                                        <h:panelGroup rendered="#{game.state != 'IN_PROGRESS' and !(gameManagerController.myGame and game.playerCount gt 2 and game.currentRound == null)}">
+                                            <h2><h:outputText value="#{messages.waitingForStart}"/></h2>
+                                        </h:panelGroup>
+
+                                    </div>
+
+                                    <h:panelGroup rendered="#{game.state == 'IN_PROGRESS'}">
+                                        <h:commandLink action="#{gameManagerController.openGame}">
+                                            <p class="list-group-item-text">
+                                                <h:outputText value="#{messages.owner}"/>:
+                                                <h:outputText value="#{game.owner.user.fullName}" rendered="#{!gameManagerController.myGame}"/>
+                                                <h:outputText value="Me" rendered="#{gameManagerController.myGame}"/>
+                                            </p>
+
+                                            <p>
+                                                <h:outputText value="#{messages.players}"/>:
+                                            </p>
+                                            <ul class="userList">
+                                                <ui:repeat value="#{game.playerList}" var="player">
+                                                    <li>
+                                                        <img src="#{player.user.imageUrl}" alt="avatar"/> <h:outputText value="#{player.user.fullName}"/>:
+                                                        <h:outputText value="#{player.score}"/>
+                                                    </li>
+                                                </ui:repeat>
+                                            </ul>
+                                        </h:commandLink>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{game.state != 'IN_PROGRESS'}">
+                                        <a href="#popup#{game.id}" data-rel="popup" data-position-to="window" data-transition="pop">
+
+                                            <p class="list-group-item-text">
+                                                <h:outputText value="#{messages.owner}"/>:
+                                                <h:outputText value="#{game.owner.user.fullName}" rendered="#{!gameManagerController.myGame}"/>
+                                                <h:outputText value="Me" rendered="#{gameManagerController.myGame}"/>
+                                            </p>
+
+                                            <p>
+                                                <h:outputText value="#{messages.players}"/>:
+                                            </p>
+                                            <ul class="userList">
+                                                <ui:repeat value="#{game.playerList}" var="player">
+                                                    <li>
+                                                        <img src="#{player.user.imageUrl}" alt="avatar"/> <h:outputText value="#{player.user.fullName}"/>:
+                                                        <h:outputText value="#{player.score}"/>
+                                                    </li>
+                                                </ui:repeat>
+                                            </ul>
+                                        </a>
+                                    </h:panelGroup>
+                                </li>
+                            </ui:repeat>
+                        </ul>
+                    </h:form>
+
+                </div>
+
+                <div id="openGames" class="ui-body-d ui-content">
+                    <h2><h:outputText value="#{messages.availableGames}"/></h2>
+                    <h:form id="openGame">
+                        <ul data-role="listview" data-inset="true">
+                            <ui:repeat value="#{gameManagerController.openGames}" var="game">
+                                <li>
+                                    <div data-role="popup" id="popup#{game.id}" data-theme="a" data-overlay-theme="b" class="ui-content" >
+                                        <h2><h:outputText value="#{messages.joinGame}"/></h2>
+                                        <h:commandLink action="#{gameManagerController.joinGame}" styleClass="ui-btn">
+                                            <i class="fa fa-folder-open"></i> | <h:outputText value="#{messages.join}"/>
+                                        </h:commandLink>
+                                    </div>
+
+
+                                    <a href="#popup#{game.id}" data-rel="popup" data-position-to="window" data-transition="pop">
+                                        <h2><h:outputText value="#{game.name}"/></h2>
+                                        <span class="ui-li-count"><h:outputText value="#{game.playerCount}"/></span>
+
+                                        <p><strong><h:outputText value="#{messages.owner}" />:</strong> <h:outputText value="#{game.owner.user.fullName}"/></p>
+                                    </a>
+                                </li>
+                            </ui:repeat>
+                        </ul>
+                    </h:form>
+
+                </div>
+
+                <div id="newGame" class="ui-body-d ui-content">
+                    <h2><h:outputText value="#{messages.createNewGame}"/></h2>
+                    <h:form id="createGame">
+                        <div class="form-group">
+                            <label for="gameName"><h:outputText value="#{messages.name}"/></label>
+                            <h:inputText id="gameName" styleClass="form-control" value="#{gameManagerController.name}"/>
+                        </div>
+                        <h:commandLink action="#{gameManagerController.createGame}" styleClass="ui-btn">
+                            <i class="fa fa-plus"></i> | <h:outputText value="#{messages.createGame}"/>
+                        </h:commandLink>
+                    </h:form>
+                </div>
+            </div>
+        </ui:define>
+
+        <ui:define name="scripts">
+            <script language="javascript" type="text/javascript">
+                $(function() {
+                    var socket = new SockJS("/wwa-1.0/game");
+                    var stompClient = Stomp.over(socket);
+                    stompClient.connect('fred', 'fred', function() {
+                        stompClient.send('/app/demo', {}, '"BLAHBLAH"');
+                    });
+                });
+            </script>
+        </ui:define>
+    </ui:composition>
+
+</html>
