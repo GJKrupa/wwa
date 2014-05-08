@@ -69,11 +69,11 @@ ul.userList li img {
     margin-left: 20px;
 }
 
-.previous-round .winner {
-    background: lightgreen;
+.previous-round-mobile .list-group-item-success a {
+    background: lightgreen !important;
 }
 
-.list-group-item-disabled {
-    color: #808080;
-    background-color: lightgrey;
+.list-group-item-disabled, .previous-round-mobile .list-group-item-disabled a {
+    color: #808080 !important;
+    background-color: lightgrey !important;
 }

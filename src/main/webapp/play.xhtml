@@ -117,7 +117,7 @@
         <ui:define name="scripts">
             <script language="javascript" type="text/javascript">
                 $(function() {
-                    var socket = new SockJS("/game");
+                    var socket = new SockJS("/wwa-1.0/game");
                     var stompClient = Stomp.over(socket);
                     stompClient.connect('fred', 'fred', function() {
                         stompClient.subscribe('/topic/game/#{gamePlayController.gameId}', function(message) {

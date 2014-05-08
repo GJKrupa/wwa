@@ -110,7 +110,7 @@ public class GameServiceImpl implements GameService{
         if (cards.size() > 1) {
             play.setCard2(cards.get(1));
         }
-        if (cards.size() > 3) {
+        if (cards.size() > 2) {
             play.setCard3(cards.get(2));
         }
         play.setPlayer(player);
