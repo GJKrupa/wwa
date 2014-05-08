@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+        >
+
+    <ui:composition template="/templates/template-nonav.xhtml">
+        <ui:define name="head"><title>Words with Attitude - Login</title></ui:define>
+
+        <ui:define name="content">
+
+                <form id="standard_signin" action="login/authenticate" method="POST" role="form" class="form-horizontal">
+
+                    <label for="username"><h:outputText value="#{messages.username}"/></label>
+                    <input id="username" name="username" type="text" />
+
+                    <label for="password"><h:outputText value="#{messages.password}"/></label>
+                    <input class="form-control" id="password" name="password" type="password" />
+
+                    <button type="submit">
+                        <h:outputText value="#{messages.login}"/>
+                    </button>
+
+                </form>
+
+                <form id="tw_signin" action="signin/twitter" method="POST">
+                        <button type="submit" class="btn btn-twitter">
+                            <i class="fa fa-twitter"></i> | Connect with Twitter
+                        </button>
+                </form>
+                <form id="fb_signin" action="signin/facebook" method="POST">
+                        <button type="submit" class="btn btn-facebook">
+                            <i class="fa fa-facebook"></i> | Connect with Facebook
+                        </button>
+                </form>
+                <form id="li_signing" action="signin/linkedin" method="POST">
+                        <button type="submit" class="btn btn-linkedin">
+                            <i class="fa fa-linkedin"></i> | Connect with LinkedIn
+                        </button>
+                </form>
+
+        </ui:define>
+    </ui:composition>
+
+</html>

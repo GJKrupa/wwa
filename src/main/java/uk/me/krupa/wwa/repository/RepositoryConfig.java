@@ -3,9 +3,7 @@ package uk.me.krupa.wwa.repository;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.kernel.GraphDatabaseAPI;
-import org.neo4j.server.WrappingNeoServerBootstrapper;
 import org.neo4j.shell.ShellSettings;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,13 +31,13 @@ public class RepositoryConfig extends Neo4jAspectConfiguration {
         return graphDatabaseService;
     }
 
-    @Bean(name = "wrappingNeoServerBootstrapper")
-    @Autowired
-    public WrappingNeoServerBootstrapper wrappingNeoServerBootstrapper(GraphDatabaseService graphDatabaseService) {
-        WrappingNeoServerBootstrapper wrappingNeoServerBootstrapper = new WrappingNeoServerBootstrapper(
-                (GraphDatabaseAPI) graphDatabaseService);
-        wrappingNeoServerBootstrapper.start();
-        return wrappingNeoServerBootstrapper;
-    }
+//    @Bean(name = "wrappingNeoServerBootstrapper")
+//    @Autowired
+//    public WrappingNeoServerBootstrapper wrappingNeoServerBootstrapper(GraphDatabaseService graphDatabaseService) {
+//        WrappingNeoServerBootstrapper wrappingNeoServerBootstrapper = new WrappingNeoServerBootstrapper(
+//                (GraphDatabaseAPI) graphDatabaseService);
+//        wrappingNeoServerBootstrapper.start();
+//        return wrappingNeoServerBootstrapper;
+//    }
 
 }

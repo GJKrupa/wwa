@@ -2,9 +2,7 @@ package uk.me.krupa.wwa.service.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.data.neo4j.annotation.GraphTraversal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.social.security.SocialUserDetails;
 import org.springframework.social.security.SocialUserDetailsService;
@@ -52,7 +50,7 @@ public class UserServiceImpl implements UserService, SocialUserDetailsService {
     public User loadByUsername(String username) {
         LOGGER.info("Loading user " + username);
         User user = userDetailsRepository.findByUsername(username);
-        if (user.getPassword() == null) {
+        if (user != null && user.getPassword() == null) {
             user.setPassword(user.getUserId());
         }
         return user;

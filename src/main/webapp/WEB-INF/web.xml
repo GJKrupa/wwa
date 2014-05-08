@@ -11,6 +11,15 @@
         <url-pattern>*.xhtml</url-pattern>
     </servlet-mapping>
 
+    <filter>
+        <filter-name>mobile-detector</filter-name>
+        <filter-class>uk.me.krupa.wwa.ui.jsf.MobileDeviceDetectorFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>mobile-detector</filter-name>
+        <url-pattern>*.xhtml</url-pattern>
+    </filter-mapping>
+
     <welcome-file-list>
         <welcome-file>index.xhtml</welcome-file>
     </welcome-file-list>

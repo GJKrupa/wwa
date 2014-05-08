@@ -12,6 +12,8 @@
             <base-name>uk.me.krupa.wwa.ui.messages</base-name>
             <var>messages</var>
         </resource-bundle>
+
+        <resource-handler>uk.me.krupa.wwa.ui.jsf.MobileAwareResourceHandler</resource-handler>
     </application>
 
 </faces-config>

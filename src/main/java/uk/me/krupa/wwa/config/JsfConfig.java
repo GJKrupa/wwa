@@ -4,8 +4,10 @@ import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
+import uk.me.krupa.wwa.ui.jsf.MobileDeviceDetectorFilter;
 
 import javax.faces.webapp.FacesServlet;
+import javax.servlet.FilterRegistration;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
@@ -23,6 +25,9 @@ public class JsfConfig implements WebApplicationInitializer {
         ServletRegistration.Dynamic jsf = servletContext.addServlet("facesServlet", FacesServlet.class);
         jsf.setLoadOnStartup(1);
         jsf.addMapping("*.xhtml");
+
+        FilterRegistration.Dynamic filter = servletContext.addFilter("mobileResolver", new MobileDeviceDetectorFilter());
+        filter.addMappingForUrlPatterns(null, false, "/");
 
         ServletRegistration.Dynamic dispatcher = servletContext.addServlet("dispatcher", new DispatcherServlet(rootContext));
         dispatcher.setLoadOnStartup(1);

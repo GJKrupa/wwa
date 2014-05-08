@@ -50,6 +50,9 @@ dependencies {
     compile group: 'org.springframework.data', name: 'spring-data-neo4j', version: '3.0.1.RELEASE'
     compile group: 'org.springframework.data', name: 'spring-data-neo4j-rest', version: '3.0.1.RELEASE'
     compile group: 'org.springframework.data', name: 'spring-data-neo4j-aspects', version: '3.0.1.RELEASE'
+
+    compile group: 'org.springframework.mobile', name: 'spring-mobile-device', version: springMobileVersion
+
     compile group: 'org.neo4j.app', name: 'neo4j-server', version: '2.0.1'
     compile group: 'org.neo4j.app', name: 'neo4j-server', version: '2.0.1', classifier: 'static-web'
 

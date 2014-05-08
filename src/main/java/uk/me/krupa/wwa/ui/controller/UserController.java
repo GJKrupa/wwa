@@ -20,4 +20,8 @@ public class UserController extends AbstractController {
         return "/login";
     }
 
+    public void forceMobileMode() {
+        ((HttpSession)FacesContext.getCurrentInstance().getExternalContext().getSession(true)).setAttribute("mobile", Boolean.TRUE);
+    }
+
 }
