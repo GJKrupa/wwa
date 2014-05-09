@@ -11,7 +11,7 @@
         <ui:define name="title"><h:outputText value="#{gamePlayController.game.name} - #{messages.appName}"/></ui:define>
 
         <ui:define name="header-buttons">
-            <h:commandLink action="#{gamePlayController.clearRoundData}" styleClass="ui-btn">
+            <h:commandLink action="#{gamePlayController.clearRoundData}" styleClass="ui-btn refreshButton" id="refreshButton">
                 <i class="fa fa-refresh"></i> | <h:outputText value="#{messages.refresh}"/>
             </h:commandLink>
         </ui:define>
@@ -132,9 +132,9 @@
                     stompClient.connect('fred', 'fred', function() {
                         stompClient.subscribe('/topic/game/#{gamePlayController.gameId}', function(message) {
                             if ($('#votingForm').size() != 0 &amp;&amp; message.body == '"PLAYED"') {
-                                $('#refreshForm .ui-btn').click();
+                                $('.refreshButton').click();
                             } else if (message.body == '"JUDGED"') {
-                                $('#refreshForm .ui-btn').click();
+                                $('.refreshButton').click();
                             }
                         })
                     });
