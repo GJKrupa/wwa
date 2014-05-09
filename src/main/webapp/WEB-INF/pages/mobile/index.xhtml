@@ -11,17 +11,17 @@
 
         <ui:define name="content">
             <div data-role="tabs" id="tabs">
-                <div data-role="navbar">
+                <div data-role="navbar" class="ui-state-persist">
                     <ul>
-                        <li><a href="#myGames" data-ajax="false"><h:outputText value="#{messages.myGames}"/></a></li>
+                        <li><a href="#myGames" data-ajax="false" class="ui-tabs-active"><h:outputText value="#{messages.myGames}"/></a></li>
                         <li><a href="#openGames" data-ajax="false"><h:outputText value="#{messages.availableGames}"/></a></li>
                         <li><a href="#newGame" data-ajax="false"><h:outputText value="#{messages.createNewGame}"/></a></li>
                     </ul>
                 </div>
-                <div id="myGames" class="ui-body-d ui-content">
-                    <h2><h:outputText value="#{messages.myGames}"/></h2>
+
+                <div id="myGames">
                     <h:form id="myGame">
-                        <ul data-role="listview" data-inset="true">
+                        <ul data-role="listview">
                             <ui:repeat value="#{gameManagerController.myGames}" var="game">
 
                                 <li data-role="list-divider">
@@ -101,10 +101,9 @@
 
                 </div>
 
-                <div id="openGames" class="ui-body-d ui-content">
-                    <h2><h:outputText value="#{messages.availableGames}"/></h2>
+                <div id="openGames">
                     <h:form id="openGame">
-                        <ul data-role="listview" data-inset="true">
+                        <ul data-role="listview">
                             <ui:repeat value="#{gameManagerController.openGames}" var="game">
                                 <li>
                                     <div data-role="popup" id="popup#{game.id}" data-theme="a" data-overlay-theme="b" class="ui-content" >

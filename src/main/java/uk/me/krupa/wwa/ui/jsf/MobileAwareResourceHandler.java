@@ -6,6 +6,8 @@ import javax.faces.application.ResourceHandler;
 import javax.faces.application.ResourceHandlerWrapper;
 import javax.faces.application.ViewResource;
 import javax.faces.context.FacesContext;
+import java.util.Deque;
+import java.util.LinkedList;
 
 /**
  * Created by krupagj on 07/05/2014.
@@ -21,23 +23,22 @@ public class MobileAwareResourceHandler extends ResourceHandlerWrapper {
     @Override
     public ViewResource createViewResource(FacesContext context, String resourceName) {
 
-        String prefixedPath;
-        String desktopPath = "/WEB-INF/pages/desktop" + resourceName;
+        Deque<String> pathsToCheck = new LinkedList<>();
+
+        pathsToCheck.push(resourceName);
+        pathsToCheck.push("/WEB-INF/pages/desktop" + resourceName);
+
         Device device = MobileDeviceDetectorFilter.getDevice();
-        if (device == null || device.isNormal()) {
-            prefixedPath = desktopPath;
-        } else if (device.isMobile()) {
-            prefixedPath = "/WEB-INF/pages/mobile" + resourceName;
-        } else {
-            prefixedPath = "/WEB-INF/pages/tablet" + resourceName;
+        if (device != null && device.isMobile()) {
+            pathsToCheck.push("/WEB-INF/pages/mobile" + resourceName);
+        } else if (device != null && device.isTablet()) {
+            pathsToCheck.push("/WEB-INF/pages/mobile" + resourceName);
+            pathsToCheck.push("/WEB-INF/pages/tablet" + resourceName);
         }
 
-        ViewResource thingy = wrapped.createViewResource(context, prefixedPath);
-        if (thingy == null) {
-            thingy = wrapped.createViewResource(context, desktopPath);
-        }
-        if (thingy == null) {
-            thingy = wrapped.createViewResource(context, resourceName);
+        ViewResource thingy = null;
+        while (thingy == null && !pathsToCheck.isEmpty()) {
+            thingy = wrapped.createViewResource(context, pathsToCheck.pop());
         }
 
         return thingy;

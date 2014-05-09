@@ -7,8 +7,11 @@
 
     <ui:composition template="template.xhtml">
         <ui:define name="body">
-            <ui:include src="non-nav-header.xhtml"/>
-            <div class="ui-content">
+            <div data-role="page">
+                <div data-role="header" data-position="fixed">
+                    <ui:include src="non-nav-header.xhtml"/>
+                </div>
+
                 <ui:insert name="content"/>
             </div>
         </ui:define>
