@@ -30,6 +30,7 @@ public class JsfConfig implements WebApplicationInitializer {
         filter.addMappingForUrlPatterns(null, false, "/");
 
         ServletRegistration.Dynamic dispatcher = servletContext.addServlet("dispatcher", new DispatcherServlet(rootContext));
+        dispatcher.setAsyncSupported(true);
         dispatcher.setLoadOnStartup(1);
         dispatcher.addMapping("/");
 
