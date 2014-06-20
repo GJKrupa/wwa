@@ -33,6 +33,7 @@ public class JsfConfig implements WebApplicationInitializer {
         dispatcher.setAsyncSupported(true);
         dispatcher.setLoadOnStartup(1);
         dispatcher.addMapping("/");
+        dispatcher.addMapping("*.do");
 
         // Manage the lifecycle of the root application context
         servletContext.addListener(new ContextLoaderListener(rootContext));

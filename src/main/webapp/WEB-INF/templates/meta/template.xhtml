@@ -3,17 +3,21 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets" ng-app="app">
     
     <h:head>
         <h:outputStylesheet library="bootstrap" name="css/bootstrap.min.css"/>
         <h:outputStylesheet library="app" name="css/wwa.css"/>
         <h:outputStylesheet library="font-awesome" name="css/font-awesome.min.css"/>
         <h:outputStylesheet library="font-awesome" name="css/social-buttons.css"/>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.13/angular.min.js"></script>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.13/angular-resource.min.js"></script>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.13/angular-route.min.js"></script>
         <ui:insert name="head"/>
     </h:head>
 
     <h:body>
+
         <ui:insert name="body"/>
 
         <h:outputScript library="jquery" name="jquery-1.11.0.min.js"/>
@@ -21,7 +25,6 @@
         <script type="text/javascript" src="http://uxian2.cloudapp.net:8080/s/d41d8cd98f00b204e9800998ecf8427e/en_UKrkgfaq-1988229788/6261/4/1.4.7/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?collectorId=5a3a8a3a"></script>
         <script type="text/javascript" src="http://cdn.sockjs.org/sockjs-0.3.min.js"></script>
         <h:outputScript library="stomp" name="stomp.min.js"/>
-
         <ui:insert name="scripts"/>
     </h:body>
     

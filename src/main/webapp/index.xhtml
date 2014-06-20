@@ -3,66 +3,64 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-        >
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <ui:composition template="WEB-INF/templates/template-nav.xhtml">
-        <ui:define name="head"><title><h:outputText value="#{messages.appName}"/></title></ui:define>
+        <ui:define name="head">
+            <title><h:outputText value="#{messages.appName}"/></title>
+            <h:outputScript library="app" name="js/index.js"/>
+        </ui:define>
 
         <ui:define name="content">
-            <div class="row">
+
+            <div class="row" ng-controller="MyGamesController as gamesController" id="topLevel">
                 <div class="col-md-12">
                     <h2><h:outputText value="#{messages.createNewGame}"/></h2>
                     <h:form id="createGame">
                         <div class="form-group">
                             <label for="gameName"><h:outputText value="#{messages.name}"/></label>
-                            <h:inputText id="gameName" styleClass="form-control" value="#{gameManagerController.name}"/>
+                            <input id="gameName" class="form-control" ng-model="gamesController.gameName"/>
                         </div>
-                        <h:commandLink action="#{gameManagerController.createGame}" styleClass="btn btn-primary">
+                        <a ng-click="gamesController.createGame()" class="btn btn-info">
                             <i class="fa fa-plus"></i> | <h:outputText value="#{messages.createGame}"/>
-                        </h:commandLink>
+                        </a>
                     </h:form>
                 </div>
 
                 <div class="col-md-6">
                     <h2><h:outputText value="#{messages.myGames}"/></h2>
                     <h:form id="myGame">
+
                         <ul class="list-group">
-                            <ui:repeat value="#{gameManagerController.myGames}" var="game">
-                                <li class="list-group-item">
-                                    <h:panelGroup styleClass="label label-success pull-right" rendered="#{gameManagerController.yourTurn}">
-                                        <h:outputText value="#{messages.yourTurn}"/>
-                                    </h:panelGroup>
-                                    <h4 class="list-group-item-heading"><h:outputText value="#{game.name}"/></h4>
-                                    <p class="list-group-item-text">
-                                        <h:outputText value="#{messages.owner}"/>:
-                                        <h:outputText value="#{game.owner.user.fullName}" rendered="#{!gameManagerController.myGame}"/>
-                                        <h:outputText value="Me" rendered="#{gameManagerController.myGame}"/>
-                                    </p>
+                            <li ng-repeat="game in gamesController.myGames" class="list-group-item">
+                                <h4 class="list-group-item-heading">{{game.name}}</h4>
+                                <p class="list-group-item-text">
+                                    <h:outputText value="#{messages.owner}"/>:
+                                    <span ng-if="!game.myGame">{{game.owner}}</span>
+                                    <span ng-if="game.myGame"><h:outputText value="#{messages.me}"/></span>
+                                </p>
 
-                                    <p>
-                                        <h:outputText value="#{messages.players}"/>:
-                                    </p>
-                                    <ul class="userList">
-                                        <ui:repeat value="#{game.playerList}" var="player">
-                                            <li>
-                                                <img src="#{player.user.imageUrl}" alt="avatar"/> <h:outputText value="#{player.user.fullName}"/>:
-                                                <h:outputText value="#{player.score}"/>
-                                            </li>
-                                        </ui:repeat>
-                                    </ul>
+                                <p>
+                                    <h:outputText value="#{messages.players}"/>:
+                                </p>
 
-                                    <p>
-                                        <h:commandLink action="#{gameManagerController.openGame}" styleClass="btn btn-info" rendered="#{game.state == 'IN_PROGRESS'}">
-                                            <i class="fa fa-folder-open"></i> | <h:outputText value="#{messages.open}"/>
-                                        </h:commandLink>
+                                <ul class="userList">
+                                    <li ng-repeat="player in game.players">
+                                        <img src="{{player.avatarUrl}}" alt="avatar"/> <h:outputText value="{{player.name}}"/>:
+                                        <h:outputText value="{{player.score}}"/>
+                                    </li>
+                                </ul>
 
-                                        <h:commandLink action="#{gameManagerController.startGame}" styleClass="btn btn-success" rendered="#{gameManagerController.myGame and game.playerCount gt 2 and game.currentRound == null}">
-                                            <i class="fa fa-check-circle"></i> | <h:outputText value="#{messages.start}"/>
-                                        </h:commandLink>
-                                    </p>
-                                </li>
-                            </ui:repeat>
+                                <p>
+                                    <a href="play.xhtml?game={{game.id}}" class="btn btn-info" ng-if="game.canPlay">
+                                        <i class="fa fa-folder-open"></i> | <h:outputText value="#{messages.open}"/>
+                                    </a>
+
+                                    <a ng-click="gamesController.startGame(game.id)" class="btn btn-info" ng-if="game.canStart">
+                                        <i class="fa fa-check-circle"></i> | <h:outputText value="#{messages.start}"/>
+                                    </a>
+                                </p>
+                            </li>
                         </ul>
                     </h:form>
                 </div>
@@ -70,23 +68,23 @@
                 <div class="col-md-6">
                     <h2><h:outputText value="#{messages.availableGames}"/></h2>
                     <h:form id="openGame">
-                    <div class="list-group">
-                        <ui:repeat value="#{gameManagerController.openGames}" var="game">
-                            <div class="list-group-item">
-                                <span class="badge"><h:outputText value="#{game.playerCount}"/></span>
-                                <h4 class="list-group-item-heading"><h:outputText value="#{game.name}"/></h4>
+                        <div class="list-group">
+                            <div class="list-group-item" ng-repeat="game in gamesController.openGames">
+                                <span class="badge">{{game.players.length}}</span>
+                                <h4 class="list-group-item-heading">{{game.name}}</h4>
                                 <p>
-                                    <h:outputText value="#{messages.owner}"/>: <h:outputText value="#{game.owner.user.fullName}"/>
+                                    <h:outputText value="#{messages.owner}"/>: {{game.owner}}
                                 </p>
                                 <p>
-                                    <h:commandLink action="#{gameManagerController.joinGame}" styleClass="btn btn-success">
+                                    <a ng-click="gamesController.joinGame(game.id)" class="btn btn-info">
                                         <i class="fa fa-users"></i> | <h:outputText value="#{messages.join}"/>
-                                    </h:commandLink>
+                                    </a>
                                 </p>
                             </div>
-                        </ui:repeat>
-                    </div>
+                        </div>
                     </h:form>
+
+
                 </div>
 
             </div>
@@ -99,7 +97,14 @@
                     var socket = new SockJS("/wwa-1.0/game");
                     var stompClient = Stomp.over(socket);
                     stompClient.connect('fred', 'fred', function() {
-                        stompClient.send('/app/demo', {}, '"BLAHBLAH"');
+                        stompClient.subscribe('/topic/newGames', function(message) {
+                            var gamesController = angular.element(document.getElementById('topLevel')).scope().gamesController;
+                            gamesController.refreshOpenGames();
+                        });
+                        stompClient.subscribe('/topic/updatedGames', function(message) {
+                            var gamesController = angular.element(document.getElementById('topLevel')).scope().gamesController;
+                            gamesController.refreshGame(message.body);
+                        });
                     });
                 });
             </script>

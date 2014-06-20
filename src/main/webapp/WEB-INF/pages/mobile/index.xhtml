@@ -7,10 +7,13 @@
         >
 
     <ui:composition template="templates/template-nav.xhtml">
-        <ui:define name="head"><title><h:outputText value="#{messages.appName}"/></title></ui:define>
+        <ui:define name="head">
+            <title><h:outputText value="#{messages.appName}"/></title>
+            <h:outputScript library="app" name="js/index.js"/>
+        </ui:define>
 
         <ui:define name="content">
-            <div data-role="tabs" id="tabs">
+            <div data-role="tabs" id="tabs" ng-controller="MyGamesController as gamesController">
                 <div data-role="navbar" class="ui-state-persist">
                     <ul>
                         <li><a href="#myGames" data-ajax="false" class="ui-tabs-active"><h:outputText value="#{messages.myGames}"/></a></li>

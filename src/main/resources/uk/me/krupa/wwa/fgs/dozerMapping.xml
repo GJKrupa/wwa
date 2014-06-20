@@ -1,0 +1,37 @@
+<mappings xmlns="http://dozer.sourceforge.net"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://dozer.sourceforge.net
+          http://dozer.sourceforge.net/schema/beanmapping.xsd">
+
+    <configuration>
+        <stop-on-errors>true</stop-on-errors>
+    </configuration>
+
+    <mapping type="one-way">
+        <class-a>uk.me.krupa.wwa.entity.game.Game</class-a>
+        <class-b>uk.me.krupa.wwa.dto.summary.GameSummary</class-b>
+        <field>
+            <a>players</a>
+            <b>players</b>
+            <a-hint>uk.me.krupa.wwa.entity.game.Player</a-hint>
+            <b-hint>uk.me.krupa.wwa.dto.summary.PlayerSummary</b-hint>
+        </field>
+        <field>
+            <a>owner.user.fullName</a>
+            <b>owner</b>
+        </field>
+    </mapping>
+    
+    <mapping type="one-way">
+        <class-a>uk.me.krupa.wwa.entity.game.Player</class-a>
+        <class-b>uk.me.krupa.wwa.dto.summary.PlayerSummary</class-b>
+        <field>
+            <a>user.fullName</a>
+            <b>name</b>
+        </field>
+        <field>
+            <a>user.imageUrl</a>
+            <b>avatarUrl</b>
+        </field>
+    </mapping>
+</mappings>

@@ -2,12 +2,15 @@ package uk.me.krupa.wwa.ui.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import uk.me.krupa.wwa.entity.game.Game;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import uk.me.krupa.wwa.dto.summary.GameSummary;
 import uk.me.krupa.wwa.service.game.GameService;
 
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
+import java.util.List;
 
 /**
  * Created by krupagj on 21/04/2014.
@@ -20,76 +23,47 @@ public class GameManagerController extends AbstractController {
     private GameService gameService;
 
     @Autowired
-    private GamePlayController gamePlayController;
+    private SimpMessagingTemplate simpMessagingTemplate;
 
-    private DataModel<Game> openGames;
-    private DataModel<Game> myGames;
-
-    private String name;
-
-    public DataModel<Game> getOpenGames() {
-        if (openGames == null) {
-            openGames = new ListDataModel<>(gameService.getOpenGames(getUser()));
-        }
-        return openGames;
+    @RequestMapping("/createGame.do")
+    @ResponseBody
+    public GameSummary createGame(@RequestBody String name) {
+        GameSummary game = gameService.createGame(getUser(), name);
+        simpMessagingTemplate.convertAndSend("/topic/newGames", game);
+        return game;
     }
 
-    public DataModel<Game> getMyGames() {
-        if (myGames == null) {
-            myGames = new ListDataModel<>(gameService.getGamesForUser(getUser()));
-        }
-        return myGames;
+    @RequestMapping("/openGames.do")
+    @ResponseBody
+    public List<GameSummary> getOpenGames() {
+        return gameService.getOpenGames(getUser());
     }
 
-    public void createGame() {
-        gameService.createGame(getUser(), name);
-        myGames = null;
+    @RequestMapping("/getGame.do")
+    @ResponseBody
+    public GameSummary getGame(@RequestBody long id) {
+        return gameService.getGameSummaryById(id, getUser());
     }
 
-    public void joinGame() {
-        gameService.joinGame(getUser(), openGames.getRowData().getId());
-        openGames = null;
-        myGames = null;
+
+    @RequestMapping("/myGames.do")
+    @ResponseBody
+    public List<GameSummary> getMyGames() {
+        return gameService.getGamesForUser(getUser());
     }
 
-    public String startGame() {
-        gameService.startGame(myGames.getRowData().getId());
-        gamePlayController.setGameId(myGames.getRowData().getId());
-        return "/play";
+    @RequestMapping("/startGame.do")
+    @ResponseBody
+    public GameSummary startGameJson(@RequestBody long id) {
+        simpMessagingTemplate.convertAndSend("/topic/updatedGames", id);
+        return gameService.startGame(id, getUser());
     }
 
-    public String openGame() {
-        Game game = myGames.getRowData();
-
-        if (game.getCurrentRound() == null) {
-            return "/viewPending";
-        } else {
-            gamePlayController.setGameId(myGames.getRowData().getId());
-            return "/play";
-        }
-    }
-
-    public boolean isYourTurn() {
-        Game game = myGames.getRowData();
-
-        if (game.getCurrentRound() == null) {
-            return false;
-        } else if (getUser().equals(game.getCurrentRound().getCzar().getUser())) {
-            return game.getCurrentRound().getPlays().size() == game.getPlayers().size() - 1;
-        } else {
-            return game.getCurrentRound().playFor(getUser()) == null;
-        }
-    }
-
-    public boolean isMyGame() {
-        return myGames.getRowData().getOwner().getUser().equals(getUser());
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    @RequestMapping("/joinGame.do")
+    @ResponseBody
+    public GameSummary joinGame(@RequestBody long id) {
+        gameService.joinGame(getUser(), id);
+        simpMessagingTemplate.convertAndSend("/topic/updatedGames", id);
+        return gameService.getGameSummaryById(id, getUser());
     }
 }

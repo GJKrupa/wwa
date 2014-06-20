@@ -8,7 +8,9 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.neo4j.aspects.support.node.Neo4jNodeBacking;
 import org.springframework.data.neo4j.aspects.support.relationship.Neo4jRelationshipBacking;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import uk.me.krupa.wwa.entity.EntityConfig;
+import uk.me.krupa.wwa.fgs.FgsConfig;
 import uk.me.krupa.wwa.lifecycle.LifecycleConfig;
 import uk.me.krupa.wwa.repository.RepositoryConfig;
 import uk.me.krupa.wwa.service.ServiceConfig;
@@ -23,6 +25,7 @@ import uk.me.krupa.wwa.ui.sockets.WebSocketConfig;
         RepositoryConfig.class,
         ControllerConfig.class,
         SecurityConfig.class,
+        FgsConfig.class,
         ServiceConfig.class,
         SpringSocialConfig.class,
         WebSocketConfig.class,
@@ -31,6 +34,7 @@ import uk.me.krupa.wwa.ui.sockets.WebSocketConfig;
 @PropertySource("classpath:application.properties")
 @EnableAspectJAutoProxy
 @EnableLoadTimeWeaving(aspectjWeaving = EnableLoadTimeWeaving.AspectJWeaving.ENABLED)
+@EnableWebMvc
 public class MasterConfig {
 
     @Bean

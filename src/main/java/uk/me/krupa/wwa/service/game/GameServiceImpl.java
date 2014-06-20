@@ -4,11 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.me.krupa.wwa.dto.summary.GameSummary;
 import uk.me.krupa.wwa.entity.cards.BlackCard;
 import uk.me.krupa.wwa.entity.cards.CardSet;
 import uk.me.krupa.wwa.entity.cards.WhiteCard;
 import uk.me.krupa.wwa.entity.game.*;
 import uk.me.krupa.wwa.entity.user.User;
+import uk.me.krupa.wwa.fgs.game.GameSummaryConverter;
 import uk.me.krupa.wwa.repository.cards.CardRepository;
 import uk.me.krupa.wwa.repository.game.GameRepository;
 import uk.me.krupa.wwa.repository.game.PlayerRepository;
@@ -20,7 +22,7 @@ import java.util.*;
  * Created by krupagj on 21/04/2014.
  */
 @Service
-public class GameServiceImpl implements GameService{
+public class GameServiceImpl implements GameService {
 
     private Random random = new Random();
 
@@ -39,6 +41,9 @@ public class GameServiceImpl implements GameService{
     @Autowired
     private Neo4jTemplate neo4jTemplate;
 
+    @Autowired
+    private GameSummaryConverter gameSummaryConverter;
+
     @Override
     @Transactional(readOnly = false)
     public Round createNewRound(long gameId) {
@@ -52,19 +57,25 @@ public class GameServiceImpl implements GameService{
 
     @Override
     @Transactional(readOnly = true)
-    public List<Game> getOpenGames(User user) {
-        return Collections.unmodifiableList(new LinkedList(gameRepository.listOpenGames(user)));
+    public List<GameSummary> getGamesForUser(User user) {
+        return gameSummaryConverter.convertAll(gameRepository.listGamesForUser(user), user);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Game> getGamesForUser(User user) {
-        return Collections.unmodifiableList(new LinkedList(gameRepository.listGamesForUser(user)));
+    public GameSummary getGameSummaryById(long id, User user) {
+        return gameSummaryConverter.convert(gameRepository.findOne(id), user);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<GameSummary> getOpenGames(User user) {
+        return gameSummaryConverter.convertAll(gameRepository.listOpenGames(user), user);
     }
 
     @Override
     @Transactional
-    public void createGame(User user, String name) {
+    public GameSummary createGame(User user, String name) {
         Game game = new Game();
         game.setName(name);
         game.setState(GameState.PENDING);
@@ -77,7 +88,7 @@ public class GameServiceImpl implements GameService{
         game.getBlackDeck().addAll(cardRepository.getBlackCardsInSet(cardSet));
         game.getWhiteDeck().addAll(cardRepository.getWhiteCardsInSet(cardSet));
 
-        gameRepository.save(game);
+        return gameSummaryConverter.convert(gameRepository.save(game), user);
     }
 
     @Override
@@ -131,6 +142,15 @@ public class GameServiceImpl implements GameService{
 
     @Override
     @Transactional
+    public GameSummary startGame(Long id, User user) {
+        Game game = gameRepository.findOne(id);
+        createNewRound(game);
+        game.setState(GameState.IN_PROGRESS);
+        return gameSummaryConverter.convert(gameRepository.save(game), user);
+    }
+
+    @Override
+    @Transactional
     public void chooseWinner(Long id, Play winningPlay) {
         Game game = gameRepository.findOne(id);
         putCardsInPack(game);
@@ -138,6 +158,7 @@ public class GameServiceImpl implements GameService{
         createNewRound(game);
         gameRepository.save(game);
     }
+
 
     private void registerWinner(Game game, Play winningPlay) {
         game.getCurrentRound().setWinningPlay(winningPlay);
