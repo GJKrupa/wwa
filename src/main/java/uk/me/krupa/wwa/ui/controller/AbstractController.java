@@ -20,7 +20,7 @@ public class AbstractController {
     private String name;
     private User user;
 
-    protected User getUser() {
+    public User getUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         if (user == null || name == null || !name.equals(username)) {

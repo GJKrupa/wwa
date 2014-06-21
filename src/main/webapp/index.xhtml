@@ -9,6 +9,10 @@
         <ui:define name="head">
             <title><h:outputText value="#{messages.appName}"/></title>
             <h:outputScript library="app" name="js/index.js"/>
+            <script language="javascript" type="text/javascript">
+                var userId = #{gameManagerController.user.id};
+            </script>
+
         </ui:define>
 
         <ui:define name="content">
@@ -100,13 +104,15 @@
                     var socket = new SockJS("/wwa-1.0/game");
                     var stompClient = Stomp.over(socket);
                     stompClient.connect('fred', 'fred', function() {
-                        stompClient.subscribe('/topic/newGames', function(message) {
+                        stompClient.subscribe('/topic/user/#{gameManagerController.user.id}', function(message) {
+                            notification = JSON.parse(message.body);
                             var gamesController = angular.element(document.getElementById('topLevel')).scope().gamesController;
-                            gamesController.refreshOpenGames();
+                            gamesController.handleNotification(notification);
                         });
-                        stompClient.subscribe('/topic/updatedGames', function(message) {
+                        stompClient.subscribe('/topic/user/all', function(message) {
+                            notification = JSON.parse(message.body);
                             var gamesController = angular.element(document.getElementById('topLevel')).scope().gamesController;
-                            gamesController.refreshGame(message.body);
+                            gamesController.handleNotification(notification);
                         });
                     });
                 });

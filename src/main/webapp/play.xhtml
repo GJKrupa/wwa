@@ -10,14 +10,15 @@
         <ui:define name="head">
             <title><h:outputText value="#{messages.appName}"/></title>
             <script language="javascript" type="text/javascript">
-                var gameId = '#{gamePlayController.gameId}';
+                var gameId = #{gamePlayController.gameId};
+                var userId = #{gamePlayController.user.id};
             </script>
             <h:outputScript library="app" name="js/index.js"/>
         </ui:define>
 
         <ui:define name="content">
-            <div  ng-controller="GameController as controller">
-                <div class="row" id="topLevel">
+            <div  ng-controller="GameController as controller" id="topLevel">
+                <div class="row">
                     <div class="col-md-8">
                         <h2>{{controller.game.name}}</h2>
 
@@ -96,17 +97,14 @@
         <ui:define name="scripts">
             <script language="javascript" type="text/javascript">
                 $(function() {
-                    var gameId = '#{gamePlayController.gameId}';
                     var socket = new SockJS("/wwa-1.0/game");
                     var stompClient = Stomp.over(socket);
                     stompClient.connect('fred', 'fred', function() {
-//                        stompClient.subscribe('/topic/game/', function(message) {
-//                            if ($('#votingForm').size() != 0 &amp;&amp; message.body == '"PLAYED"') {
-//                                $('#refreshForm .btn').click();
-//                            } else if (message.body == '"JUDGED"') {
-//                                $('#refreshForm .btn').click();
-//                            }
-//                        })
+                        stompClient.subscribe('/topic/user/#{gameManagerController.user.id}', function(message) {
+                            notification = JSON.parse(message.body);
+                            var controller = angular.element(document.getElementById('topLevel')).scope().controller;
+                            controller.handleNotification(notification);
+                        });
                     });
                 });
             </script>

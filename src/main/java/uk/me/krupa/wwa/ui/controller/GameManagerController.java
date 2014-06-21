@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import uk.me.krupa.wwa.dto.summary.GameSummary;
 import uk.me.krupa.wwa.service.game.GameService;
+import uk.me.krupa.wwa.service.notification.NotificationService;
 
 import java.util.List;
 
@@ -23,13 +24,13 @@ public class GameManagerController extends AbstractController {
     private GameService gameService;
 
     @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
+    private NotificationService notificationService;
 
     @RequestMapping("/createGame.do")
     @ResponseBody
     public GameSummary createGame(@RequestBody String name) {
         GameSummary game = gameService.createGame(getUser(), name);
-        simpMessagingTemplate.convertAndSend("/topic/newGames", game);
+        notificationService.notifyGameCreated(getUser(), game.getId(), name);
         return game;
     }
 
@@ -56,7 +57,7 @@ public class GameManagerController extends AbstractController {
     @ResponseBody
     public GameSummary startGameJson(@RequestBody long id) {
         gameService.startGame(id, getUser());
-        simpMessagingTemplate.convertAndSend("/topic/updatedGames", id);
+        notificationService.notifyGameStarted(getUser(), id);
         return gameService.getGameSummaryById(id, getUser());
     }
 
@@ -64,7 +65,7 @@ public class GameManagerController extends AbstractController {
     @ResponseBody
     public GameSummary joinGame(@RequestBody long id) {
         gameService.joinGame(getUser(), id);
-        simpMessagingTemplate.convertAndSend("/topic/updatedGames", id);
+        notificationService.notifyGameJoined(getUser(), id);
         return gameService.getGameSummaryById(id, getUser());
     }
 }

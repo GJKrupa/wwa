@@ -69,9 +69,17 @@ angular.module('indexControllers', [])
             this.game.$promise.then(angular.bind(this, this.updatePendingText));
         };
 
+        this.handleNotification = function(notification) {
+            if (notification.game == this.gameId) {
+                this.refresh();
+                toastr.info(notification.displayMessage);
+            }
+        };
+
         this.pendingText = '';
         this.playedCards = [];
         this.gameId = gameId;
+        this.userId = userId;
         this.refresh();
     }])
 
@@ -80,12 +88,13 @@ angular.module('indexControllers', [])
         this.openGames = GamesService.getOpenGames();
         this.gameName = "";
         this.orderProp = 'name';
+        this.userId = userId;
 
         this.refreshOpenGames = function() {
             this.openGames = GamesService.getOpenGames();
         };
 
-        this.refreshGame = function(id) {
+        this.gameUpdated = function(id) {
             for (n=0; n<this.myGames.length; ++n) {
                 if (this.myGames[n].id == id) {
                     this.myGames[n] = GamesService.getGame(id);
@@ -123,7 +132,48 @@ angular.module('indexControllers', [])
         this.createGame = function(name) {
             this.myGames.push(GamesService.createGame(this.gameName));
             this.gameName = "";
-        }
+        };
+
+        this.gameUpdated = function(id) {
+            for (n=0; n<this.myGames.length; ++n) {
+                if (this.myGames[n].id == id) {
+                    this.myGames[n] = GamesService.getGame(id);
+                }
+            }
+            for (n=0; n<this.openGames.length; ++n) {
+                if (this.openGames[n].id == id) {
+                    this.openGames[n] = GamesService.getGame(id);
+                }
+            }
+        };
+
+        this.gameStarted = function(id) {
+            for (n=0; n<this.myGames.length; ++n) {
+                if (this.myGames[n].id == id) {
+                    this.myGames[n] = GamesService.getGame(id);
+                }
+            }
+            for (n=0; n<this.openGames.length; ++n) {
+                if (this.openGames[n].id == id) {
+                    this.openGames.splice(n,1);
+                }
+            }
+        };
+
+        this.handleNotification = function(notification) {
+            if (notification.user != this.userId) {
+                if (notification.notificationType == 'CREATED') {
+                    this.openGames.push(GamesService.getGame(notification.game));
+                } else if (notification.notificationType == 'JOINED') {
+                    this.gameUpdated(notification.game);
+                } else if (notification.notificationType == 'STARTED') {
+                    this.gameStarted(notification.game);
+                } else {
+                    this.gameUpdated(notification.game);
+                }
+                toastr.info(notification.displayMessage);
+            }
+        };
     }]);
 
 

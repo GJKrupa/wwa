@@ -18,6 +18,7 @@ import uk.me.krupa.wwa.entity.game.Player;
 import uk.me.krupa.wwa.entity.game.Round;
 import uk.me.krupa.wwa.entity.user.User;
 import uk.me.krupa.wwa.service.game.GameService;
+import uk.me.krupa.wwa.service.notification.NotificationService;
 
 import javax.faces.context.FacesContext;
 import javax.faces.model.DataModel;
@@ -39,7 +40,7 @@ public class GamePlayController extends AbstractController {
     private transient GameService gameService;
 
     @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
+    private NotificationService notificationService;
 
     private long gameId;
 
@@ -57,167 +58,19 @@ public class GamePlayController extends AbstractController {
     @ResponseBody
     public GameDetail playCards(@RequestBody GamePlayRequest request) {
         gameService.playCards(getUser(), request.getCards(), request.getId());
-        return gameService.getGameDetailById(request.getId(), getUser());
+        GameDetail game = gameService.getGameDetailById(request.getId(), getUser());
+        if (game.getPlays().size() == game.getPlayers().size() - 1) {
+            notificationService.notifyJudgingReady(getUser(), game.getId());
+        }
+        return game;
     }
 
     @RequestMapping("/selectWinner.do")
     @ResponseBody
     public GameDetail selectWinner(@RequestBody SelectWinnerRequest request) {
         gameService.chooseWinner(request.getGameId(), request.getPlayId());
+        notificationService.notifyJudged(getUser(), request.getGameId());
         return gameService.getGameDetailById(request.getGameId(), getUser());
     }
 
-
-//    public DataModel<WhiteCard> getMyHand() {
-//        if (hand == null) {
-//            List<WhiteCard> cards = new ArrayList<>(getGame().getPlayers().stream()
-//                    .filter(p -> p.getUser().equals(getUser()))
-//                    .findFirst().orElse(new Player()).getHand());
-//            hand = new ListDataModel<>(cards);
-//        }
-//        return hand;
-//    }
-//
-//    public boolean isCzar() {
-//        return getGame().getCurrentRound().getCzar().getUser().equals(getUser());
-//    }
-//
-//    public boolean isAllPlayed() {
-//        HashSet<Player> players = new HashSet<Player>();
-//
-//        players.addAll(
-//                getGame().getPlayers().stream()
-//                        .filter(p -> !p.equals(getGame().getCurrentRound().getCzar()))
-//                        .collect(Collectors.toList())
-//        );
-//
-//        game.getCurrentRound().getPlays().forEach(
-//                p -> players.remove(p.getPlayer())
-//        );
-//
-//        return players.isEmpty();
-//    }
-//
-//    public DataModel<Play> getPlays() {
-//        if (plays == null) {
-//            plays = new ListDataModel<Play>(new LinkedList(getGame().getCurrentRound().getPlays()));
-//        }
-//        return plays;
-//    }
-//
-//    public String getPlay() {
-//        Play play = getPlays().getRowData();
-//        return replacePlaceholders(getGame().getCurrentRound().getBlackCard().getText(), play);
-//    }
-//
-//    public boolean isPreviousRoundAvailable() {
-//        return getGame().getCurrentRound() != null && getGame().getCurrentRound().getPrevious() != null;
-//    }
-//
-//    public User getPreviousRoundWinner() {
-//            return getGame().getCurrentRound().getPrevious().getWinningPlay().getPlayer().getUser();
-//    }
-//
-
-//
-
-//
-//    public boolean isCanClear() {
-//        return !pending.isEmpty();
-//    }
-//
-//    public boolean isAlreadyPlayed() {
-//        return pending.contains(hand.getRowData());
-//    }
-//
-//    public boolean isCanSubmit() {
-//        return pending.size() == getGame().getCurrentRound().getBlackCard().getPlayCount();
-//    }
-//
-//    public void playCard() {
-//        WhiteCard card = getMyHand().getRowData();
-//        if (pending.size() < getGame().getCurrentRound().getBlackCard().getPlayCount()) {
-//            pending.add(card);
-//        }
-//    }
-//
-//    public void clearPending() {
-//        pending.clear();
-//    }
-//
-//    public void commitPlay() {
-//        if (pending.size() == getGame().getCurrentRound().getBlackCard().getPlayCount()) {
-//            gameService.playCards(getUser(), pending, game.getId());
-//        }
-//        System.err.println("/topic/game/" + gameId);
-//        simpMessagingTemplate.convertAndSend("/topic/game/" + gameId, "PLAYED");
-//        clearRoundData();
-//    }
-//
-//    public void clearRoundData() {
-//        pending.clear();
-//        game = null;
-//        hand = null;
-//        plays = null;
-//        players = null;
-//    }
-//
-//    public boolean isPlayedMove() {
-//        return getGame().getCurrentRound().hasPlayed(getUser());
-//    }
-//
-//    public Play getMyPlay() {
-//        return getGame().getCurrentRound().playFor(getUser());
-//    }
-//
-//    public void selectWinner() {
-//        Play winningPlay = plays.getRowData();
-//        gameService.chooseWinner(game.getId(), winningPlay);
-//        System.err.println("/topic/game/" + gameId);
-//        simpMessagingTemplate.convertAndSend("/topic/game/" + gameId, "JUDGED");
-//        clearRoundData();
-//    }
-//
-//    public List<WhiteCard> getPending() {
-//        return pending;
-//    }
-//
-//    public void setPending(List<WhiteCard> pending) {
-//        this.pending = pending;
-//    }
-//
-//    public DataModel<Player> getPlayers() {
-//        if (players == null) {
-//            players = new ListDataModel<>(getGame().getPlayerList());
-//        }
-//        return players;
-//    }
-//
-//    public String getPreviousRoundPlayText() {
-//        if (players.isRowAvailable()) {
-//            String pattern = getGame().getCurrentRound().getPrevious().getBlackCard().getText();
-//
-//            Play play = getGame().getCurrentRound().getPrevious().playFor(players.getRowData().getUser());
-//            if (play == null) {
-//                return null;
-//            } else {
-//                return replacePlaceholders(pattern, play);
-//            }
-//        } else {
-//            return null;
-//        }
-//    }
-//
-//    public String getPlayStyle() {
-//        Round previous = getGame().getCurrentRound().getPrevious();
-//        Play play = previous.playFor(players.getRowData().getUser());
-//        if (play == null) {
-//            return "";
-//        }
-//        if (previous.getWinningPlay().equals(play)) {
-//            return "";
-//        } else {
-//            return "";
-//        }
-//    }
 }
