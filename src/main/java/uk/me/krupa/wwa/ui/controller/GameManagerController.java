@@ -55,8 +55,9 @@ public class GameManagerController extends AbstractController {
     @RequestMapping("/startGame.do")
     @ResponseBody
     public GameSummary startGameJson(@RequestBody long id) {
+        gameService.startGame(id, getUser());
         simpMessagingTemplate.convertAndSend("/topic/updatedGames", id);
-        return gameService.startGame(id, getUser());
+        return gameService.getGameSummaryById(id, getUser());
     }
 
     @RequestMapping("/joinGame.do")

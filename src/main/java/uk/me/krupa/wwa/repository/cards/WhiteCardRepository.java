@@ -8,19 +8,11 @@ import uk.me.krupa.wwa.entity.cards.CardSet;
 import uk.me.krupa.wwa.entity.cards.WhiteCard;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by krupagj on 27/03/2014.
  */
 @Repository
-public interface CardRepository extends GraphRepository<CardSet> {
+public interface WhiteCardRepository extends GraphRepository<WhiteCard> {
 
-    @Query("START s=node({0}) MATCH s-[r:blackCards]->c RETURN c")
-    List<BlackCard> getBlackCardsInSet(CardSet cardSet);
-
-    @Query("START s=node({0}) MATCH s-[r:whiteCards]->c RETURN c")
-    List<WhiteCard> getWhiteCardsInSet(CardSet cardSet);
-
-    WhiteCard getWhiteCardById(long id);
 }

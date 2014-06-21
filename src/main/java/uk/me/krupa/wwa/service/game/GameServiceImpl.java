@@ -4,25 +4,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.me.krupa.wwa.dto.detail.GameDetail;
 import uk.me.krupa.wwa.dto.summary.GameSummary;
 import uk.me.krupa.wwa.entity.cards.BlackCard;
 import uk.me.krupa.wwa.entity.cards.CardSet;
 import uk.me.krupa.wwa.entity.cards.WhiteCard;
 import uk.me.krupa.wwa.entity.game.*;
 import uk.me.krupa.wwa.entity.user.User;
-import uk.me.krupa.wwa.fgs.game.GameSummaryConverter;
+import uk.me.krupa.wwa.fgs.game.GameDtoConverter;
 import uk.me.krupa.wwa.repository.cards.CardRepository;
+import uk.me.krupa.wwa.repository.cards.WhiteCardRepository;
 import uk.me.krupa.wwa.repository.game.GameRepository;
 import uk.me.krupa.wwa.repository.game.PlayerRepository;
 import uk.me.krupa.wwa.repository.game.RoundRepository;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by krupagj on 21/04/2014.
  */
 @Service
 public class GameServiceImpl implements GameService {
+
+    private static final Logger LOG = Logger.getLogger(GameServiceImpl.class.getName());
 
     private Random random = new Random();
 
@@ -31,6 +37,9 @@ public class GameServiceImpl implements GameService {
 
     @Autowired
     private CardRepository cardRepository;
+
+    @Autowired
+    private WhiteCardRepository whiteCardRepository;
 
     @Autowired
     private PlayerRepository playerRepository;
@@ -42,7 +51,7 @@ public class GameServiceImpl implements GameService {
     private Neo4jTemplate neo4jTemplate;
 
     @Autowired
-    private GameSummaryConverter gameSummaryConverter;
+    private GameDtoConverter gameDtoConverter;
 
     @Override
     @Transactional(readOnly = false)
@@ -58,19 +67,30 @@ public class GameServiceImpl implements GameService {
     @Override
     @Transactional(readOnly = true)
     public List<GameSummary> getGamesForUser(User user) {
-        return gameSummaryConverter.convertAll(gameRepository.listGamesForUser(user), user);
+        return gameDtoConverter.toSummaries(gameRepository.listGamesForUser(user), user);
     }
 
     @Override
     @Transactional(readOnly = true)
     public GameSummary getGameSummaryById(long id, User user) {
-        return gameSummaryConverter.convert(gameRepository.findOne(id), user);
+        return gameDtoConverter.toSummary(gameRepository.findOne(id), user);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public GameDetail getGameDetailById(long id, User user) {
+        try {
+            return gameDtoConverter.toDetail(gameRepository.findOne(id), user);
+        } catch (Throwable t) {
+            LOG.log(Level.SEVERE, "Failed", t);
+            throw t;
+        }
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<GameSummary> getOpenGames(User user) {
-        return gameSummaryConverter.convertAll(gameRepository.listOpenGames(user), user);
+        return gameDtoConverter.toSummaries(gameRepository.listOpenGames(user), user);
     }
 
     @Override
@@ -88,7 +108,7 @@ public class GameServiceImpl implements GameService {
         game.getBlackDeck().addAll(cardRepository.getBlackCardsInSet(cardSet));
         game.getWhiteDeck().addAll(cardRepository.getWhiteCardsInSet(cardSet));
 
-        return gameSummaryConverter.convert(gameRepository.save(game), user);
+        return gameDtoConverter.toSummary(gameRepository.save(game), user);
     }
 
     @Override
@@ -109,9 +129,12 @@ public class GameServiceImpl implements GameService {
 
     @Override
     @Transactional
-    public void playCards(User user, List<WhiteCard> cards, Long gameId) {
+    public void playCards(User user, List<Long> cardIds, Long gameId) {
         Game game = gameRepository.findOne(gameId);
         Player player = game.getPlayerForUser(user);
+
+        List<WhiteCard> cards = new LinkedList<>();
+        cardIds.stream().map(c -> whiteCardRepository.findOne(c)).forEach(cards::add);
 
         player.getHand().removeAll(cards);
 
@@ -146,15 +169,20 @@ public class GameServiceImpl implements GameService {
         Game game = gameRepository.findOne(id);
         createNewRound(game);
         game.setState(GameState.IN_PROGRESS);
-        return gameSummaryConverter.convert(gameRepository.save(game), user);
+        return gameDtoConverter.toSummary(gameRepository.save(game), user);
     }
 
     @Override
     @Transactional
-    public void chooseWinner(Long id, Play winningPlay) {
-        Game game = gameRepository.findOne(id);
+    public void chooseWinner(Long gameId, Long winningPlay) {
+        Game game = gameRepository.findOne(gameId);
         putCardsInPack(game);
-        registerWinner(game, winningPlay);
+
+        game.getCurrentRound().getPlays().stream()
+                .filter(p -> winningPlay.equals(p.getId()))
+                .findFirst()
+                .ifPresent(p -> registerWinner(game, p));
+
         createNewRound(game);
         gameRepository.save(game);
     }

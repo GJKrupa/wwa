@@ -1,5 +1,6 @@
 package uk.me.krupa.wwa.service.game;
 
+import uk.me.krupa.wwa.dto.detail.GameDetail;
 import uk.me.krupa.wwa.dto.summary.GameSummary;
 import uk.me.krupa.wwa.entity.cards.WhiteCard;
 import uk.me.krupa.wwa.entity.game.Game;
@@ -24,15 +25,17 @@ public interface GameService {
 
     Game getGameById(long id);
 
-    void playCards(User user, List<WhiteCard> card, Long gameId);
+    void playCards(User user, List<Long> card, Long gameId);
 
     void startGame(Long id);
 
     GameSummary startGame(Long id, User user);
 
-    void chooseWinner(Long id, Play winningPlay);
+    void chooseWinner(Long game, Long winningPlay);
 
     List<GameSummary> getGamesForUser(User user);
 
     GameSummary getGameSummaryById(long id, User user);
+
+    GameDetail getGameDetailById(long id, User user);
 }

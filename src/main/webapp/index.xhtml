@@ -33,6 +33,9 @@
 
                         <ul class="list-group">
                             <li ng-repeat="game in gamesController.myGames" class="list-group-item">
+                                <span class="label label-success pull-right" ng-if="game.yourTurn">
+                                    <h:outputText value="#{messages.yourTurn}"/>
+                                </span>
                                 <h4 class="list-group-item-heading">{{game.name}}</h4>
                                 <p class="list-group-item-text">
                                     <h:outputText value="#{messages.owner}"/>:
@@ -52,7 +55,7 @@
                                 </ul>
 
                                 <p>
-                                    <a href="play.xhtml?game={{game.id}}" class="btn btn-info" ng-if="game.canPlay">
+                                    <a href="play.xhtml?id={{game.id}}" class="btn btn-info" ng-if="game.canPlay">
                                         <i class="fa fa-folder-open"></i> | <h:outputText value="#{messages.open}"/>
                                     </a>
 
