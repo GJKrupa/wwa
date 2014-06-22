@@ -1,6 +1,7 @@
 package uk.me.krupa.wwa.dto.detail;
 
 import uk.me.krupa.wwa.dto.summary.PlayerSummary;
+import uk.me.krupa.wwa.entity.game.GameState;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -12,6 +13,7 @@ public class GameDetail {
 
     private Long id;
     private String name;
+    private GameState state;
 
     private String owner;
     private boolean myGame;
@@ -39,6 +41,14 @@ public class GameDetail {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public GameState getState() {
+        return state;
+    }
+
+    public void setState(GameState state) {
+        this.state = state;
     }
 
     public String getOwner() {

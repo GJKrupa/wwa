@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+        >
+
+    <h:body>
+        <div class="navbar navbar-default" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navCollapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <h:link outcome="/index" value="#{messages.appName}" styleClass="navbar-brand"/>
+                    <p class="navbar-text narbar-right">
+                        <img src="#{userController.user.imageUrl}" class="avatar" alt="avatar" /> <h:outputText value="#{userController.user.fullName}"/>
+                    </p>
+                </div>
+                <div class="collapse navbar-collapse" id="navCollapse">
+                    <ul class="nav navbar-nav">
+                        <li>
+                            <a href="#{facesContext.externalContext.applicationContextPath}/logout">
+                                <i class="fa fa-sign-out"></i> | <h:outputText value="#{messages.logOut}"/>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </h:body>
+
+</html>

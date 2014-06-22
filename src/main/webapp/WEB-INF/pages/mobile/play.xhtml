@@ -7,121 +7,103 @@
 
     <ui:composition template="templates/template-nav.xhtml">
 
-        <ui:define name="head"><title><h:outputText value="#{messages.appName}"/></title></ui:define>
-        <ui:define name="title"><h:outputText value="#{gamePlayController.game.name} - #{messages.appName}"/></ui:define>
-
-        <ui:define name="header-buttons">
-            <h:commandLink action="#{gamePlayController.clearRoundData}" styleClass="ui-btn refreshButton" id="refreshButton">
-                <i class="fa fa-refresh"></i> | <h:outputText value="#{messages.refresh}"/>
-            </h:commandLink>
+        <ui:define name="head">
+            <title><h:outputText value="#{messages.appName}"/></title>
+            <script language="javascript" type="text/javascript">
+                var gameId = #{gamePlayController.gameId};
+                var userId = #{gamePlayController.user.id};
+            </script>
+            <h:outputScript library="app" name="js/index.js"/>
         </ui:define>
 
         <ui:define name="content">
-            <div data-role="tabs" id="tabs">
-                <div data-role="navbar" class="ui-state-persist">
-                    <ul>
-                        <li><a href="#currentRound" data-ajax="false"><h:outputText value="#{messages.currentRound}"/></a></li>
-                        <li><a href="#previousRound" data-ajax="false"><h:outputText value="#{messages.previousRound}"/></a></li>
-                    </ul>
-                </div>
 
-                <div id="currentRound" class="ui-body-d ui-content">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#currentRound" data-toggle="tab"><h:outputText value="#{messages.play}"/></a></li>
+                <li><a href="#previousRound" data-toggle="tab">Previous</a></li>
+            </ul>
 
-                    <h:panelGroup rendered="#{!gamePlayController.czar or !gamePlayController.allPlayed}" layout="block" styleClass="ui-body ui-body-a ui-corner-all ui-page-theme-b">
+            <div class="tab-content" ng-controller="GameController as controller" id="topLevel">
+                <div class="tab-pane active" id="currentRound">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h2>{{controller.game.name}}</h2>
 
-                        <p><h:outputText value="#{gamePlayController.pendingText}"/></p>
+                            <!--<p>-->
+                                <!--<a ng-click="controller.refresh()" class="btn btn-info">-->
+                                    <!--<i class="fa fa-refresh"></i> | <h:outputText value="#{messages.refresh}"/>-->
+                                <!--</a>-->
+                            <!--</p>-->
 
-                        <hr />
+                            <div class="panel panel-default" ng-if="controller.game.plays.length == 0">
+                                <div class="panel-heading">
+                                    {{controller.pendingText}}
+                                </div>
+                                <div ng-if="controller.game.blackCard.playCount &gt; 1" class="panel-body">
+                                    <h:outputText value="#{messages.play}"/> <span class="roundNumber">{{controller.game.blackCard.playCount}}</span>
+                                    <div ng-if="controller.game.blackCard.playCount == 3">
+                                        <h:outputText value="#{messages.draw}"/> <span class="roundNumber">2</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-                        <p><h:outputText value="#{messages.play} #{gamePlayController.game.currentRound.blackCard.playCount}"/></p>
-
-                        <h:panelGroup rendered="#{gamePlayController.game.currentRound.blackCard.playCount gt 2}">
-                            <p><h:outputText value="#{messages.draw} 2"/></p>
-                        </h:panelGroup>
-                    </h:panelGroup>
-
-                    <h:panelGroup rendered="#{!gamePlayController.playedMove and !gamePlayController.czar and (gamePlayController.canClear or !gamePlayController.canPlay)}" layout="block" styleClass="col-md-12">
-                        <h:form id="commitForm">
+                    <div class="row" ng-if="controller.game.canPlay &amp;&amp; !controller.game.czar">
+                        <div class="col-md-12">
                             <p>
-                                <h:commandLink action="#{gamePlayController.commitPlay}" styleClass="ui-btn" rendered="#{!gamePlayController.canPlay}">
+                                <a ng-click="controller.playSelectedCards()" class="btn btn-primary disabled whenAllCardsSelected">
                                     <i class="fa fa-upload"></i> | <h:outputText value="#{messages.playSelectedCards}"/>
-                                </h:commandLink>
-                                <h:commandLink action="#{gamePlayController.clearPending}" styleClass="ui-btn" rendered="#{gamePlayController.canClear}">
+                                </a>
+                                <a ng-click="controller.clearSelectedCards()" class="btn btn-warning disabled whenCardsSelected">
                                     <i class="fa fa-trash-o"></i> | <h:outputText value="#{messages.clear}"/>
-                                </h:commandLink>
+                                </a>
                             </p>
-                        </h:form>
-                    </h:panelGroup>
+                        </div>
 
-                    <h:panelGroup rendered="#{gamePlayController.canPlay and !gamePlayController.czar and !gamePlayController.playedMove}">
-                        <h:form id="playCardForm">
-                            <ul data-role="listview" data-inset="true">
-                                <ui:repeat value="#{gamePlayController.myHand}" var="card">
-                                    <h:panelGroup rendered="#{gamePlayController.canPlay and !gamePlayController.alreadyPlayed}">
-                                        <li>
-                                            <h:commandLink action="#{gamePlayController.playCard}">
-                                                <h:outputText value="#{card.text}"/>
-                                            </h:commandLink>
-                                        </li>
-                                    </h:panelGroup>
-                                </ui:repeat>
+                        <div class="col-md-12">
+                            <ul class="list-group">
+                                <li class="list-group-item" ng-repeat="card in controller.game.hand | orderBy:'text'" ng-click="controller.playCard(card.id)">
+                                    {{card.text}}
+                                </li>
                             </ul>
-                        </h:form>
-                    </h:panelGroup>
+                        </div>
+                    </div>
 
-                    <h:panelGroup rendered="#{gamePlayController.czar}" layout="block">
-                        <h:form id="votingForm">
-                            <ui:repeat value="#{gamePlayController.plays}" var="play">
-                                <div>&nbsp;</div>
-                                <div class="ui-body ui-body-a ui-corner-all ui-page-theme-b">
-                                    <p>
-                                        <h:outputText value="#{gamePlayController.play}"/>
-                                    </p>
-
-                                    <h:commandLink action="#{gamePlayController.selectWinner}" styleClass="ui-btn ui-btn-a" rendered="#{gamePlayController.allPlayed}">
+                    <div class="row" ng-if="controller.game.plays.length != 0">
+                        <div class="col-md-12">
+                            <div class="panel panel-default" ng-repeat="play in controller.game.plays | orderBy:'id'">
+                                <div class="panel-heading">{{play.playedText}}</div>
+                                <div class="panel-body">
+                                    <a ng-click="controller.selectWinner(play.id)" ng-if="controller.game.czar" class="btn btn-info btn-block">
                                         <i class="fa fa-thumbs-o-up"></i> | <h:outputText value="#{messages.winner}"/>
-                                    </h:commandLink>
+                                    </a>
+                                    <span ng-if="play.yourPlay">
+                                        <h:outputText value="#{messages.yourPlay}"/>
+                                    </span>
                                 </div>
-                            </ui:repeat>
-                        </h:form>
-                    </h:panelGroup>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <h:panelGroup id="previousRound" rendered="#{gamePlayController.previousRoundAvailable}" layout="block">
-
-                    <ul data-role="listview" class="previous-round-mobile">
-                        <ui:repeat value="#{gamePlayController.players}" var="player">
-                            <li class="list-group-item #{gamePlayController.playStyle}">
-
-                                <div data-role="popup" id="popupPlayer#{player.id}" data-theme="a" data-overlay-theme="b" class="ui-content" >
-                                    <p>
-                                        <h:outputText value="#{gamePlayController.previousRoundPlayText}" rendered="#{gamePlayController.previousRoundPlayText != null}"/>
-
-                                        <h:panelGroup rendered="#{gamePlayController.previousRoundPlayText == null}" styleClass="czar">
-                                            <h:outputText value=" #{messages.czar} "/>
-                                        </h:panelGroup>
-                                    </p>
+                <div class="tab-pane" id="previousRound">
+                    <div class="row">
+                        <div class="col-md-4 col-xs-12" ng-if="controller.game.previousPlays.length != 0">
+                            <h3><h:outputText value="#{messages.previousRound}"/></h3>
+                            <div class="previous-round list-group">
+                                <div ng-repeat="play in controller.game.previousPlays | orderBy:'playerScore':reverse=true" class="list-group-item {{play.winner ? 'list-group-item-success' : 'list-group-item-disabled'}}">
+                                    <h4 class="list-group-item-heading">
+                                        <img src="{{play.playerUrl}}" alt="avatar"/> {{play.playerName}} ({{play.playerScore}})
+                                    </h4>
+                                    <span ng-if="play.playedText == undefined" class="czar"><h:outputText value=" #{messages.czar} "/></span>
+                                    <span ng-if="play.playedText != undefined">{{play.playedText == '' ? 'Czar' : play.playedText}}</span>
                                 </div>
-
-                                <a href="#popupPlayer#{player.id}" data-rel="popup" data-position-to="window" data-transition="pop">
-                                    <img src="#{player.user.imageUrl}" alt="avatar" class="ui-corner-none"/>
-                                    <h2>
-                                        <strong><h:outputText value="#{player.user.fullName}: "/></strong>
-                                        <span class="ui-li-count"><h:outputText value="#{player.score}"/></span>
-                                    </h2>
-
-                                    <h:outputText value="#{gamePlayController.previousRoundPlayText}" rendered="#{gamePlayController.previousRoundPlayText != null}"/>
-
-                                    <h:panelGroup rendered="#{gamePlayController.previousRoundPlayText == null}" styleClass="czar">
-                                        <h:outputText value=" #{messages.czar} "/>
-                                    </h:panelGroup>
-                                </a>
-                            </li>
-                        </ui:repeat>
-                    </ul>
-                </h:panelGroup>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
         </ui:define>
 
         <ui:define name="scripts">
@@ -130,17 +112,17 @@
                     var socket = new SockJS("/wwa-1.0/game");
                     var stompClient = Stomp.over(socket);
                     stompClient.connect('fred', 'fred', function() {
-                        stompClient.subscribe('/topic/game/#{gamePlayController.gameId}', function(message) {
-                            if ($('#votingForm').size() != 0 &amp;&amp; message.body == '"PLAYED"') {
-                                $('.refreshButton').click();
-                            } else if (message.body == '"JUDGED"') {
-                                $('.refreshButton').click();
-                            }
-                        })
+                        stompClient.subscribe('/topic/user/#{gameManagerController.user.id}', function(message) {
+                            notification = JSON.parse(message.body);
+                            var controller = angular.element(document.getElementById('topLevel')).scope().controller;
+                            controller.handleNotification(notification);
+                        });
                     });
                 });
             </script>
+
         </ui:define>
+
     </ui:composition>
 
 </html>

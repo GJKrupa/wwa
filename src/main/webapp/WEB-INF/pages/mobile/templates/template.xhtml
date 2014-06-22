@@ -3,35 +3,31 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
-    
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets" ng-app="app">
+
     <h:head>
-        <h:outputStylesheet library="jquery-mobile" name="jquery.mobile-1.4.2.min.css"/>
+        <h:outputStylesheet library="bootstrap" name="css/bootstrap.min.css"/>
         <h:outputStylesheet library="app" name="css/wwa.css"/>
         <h:outputStylesheet library="font-awesome" name="css/font-awesome.min.css"/>
         <h:outputStylesheet library="font-awesome" name="css/social-buttons.css"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <h:outputStylesheet library="jquery" name="toastr.min.css"/>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.13/angular.min.js"></script>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.13/angular-resource.min.js"></script>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.13/angular-route.min.js"></script>
+        <meta name="viewport" content="width=device-width, user-scalable=no"></meta>
         <ui:insert name="head"/>
     </h:head>
 
-    <h:body styleClass="ui-mobile-viewport ui-overlay-a">
+    <h:body>
+
         <ui:insert name="body"/>
 
         <h:outputScript library="jquery" name="jquery-1.11.0.min.js"/>
-
-        <script language="javascript" type="text/javascript">
-            $( document ).on( "mobileinit", function() {
-                $.mobile.ajaxEnabled = false;
-                $.mobile.defaultPageTransition = 'none';
-            });
-        </script>
-
-        <h:outputScript library="jquery-mobile" name="jquery.mobile-1.4.2.min.js"/>
+        <h:outputScript library="jquery" name="toastr.min.js"/>
+        <h:outputScript library="bootstrap" name="js/bootstrap.min.js"/>
         <script type="text/javascript" src="http://cdn.sockjs.org/sockjs-0.3.min.js"></script>
         <h:outputScript library="stomp" name="stomp.min.js"/>
-
-
         <ui:insert name="scripts"/>
     </h:body>
-    
+
 </html>

@@ -53,8 +53,7 @@
 
                                 <ul class="userList">
                                     <li ng-repeat="player in game.players">
-                                        <img src="{{player.avatarUrl}}" alt="avatar"/> <h:outputText value="{{player.name}}"/>:
-                                        <h:outputText value="{{player.score}}"/>
+                                        <img src="{{player.avatarUrl}}" alt="avatar"/> {{player.name}}: {{player.score}}
                                     </li>
                                 </ul>
 

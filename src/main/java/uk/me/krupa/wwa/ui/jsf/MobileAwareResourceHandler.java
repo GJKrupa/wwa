@@ -30,10 +30,10 @@ public class MobileAwareResourceHandler extends ResourceHandlerWrapper {
 
         Device device = MobileDeviceDetectorFilter.getDevice();
         if (device != null && device.isMobile()) {
-//            pathsToCheck.push("/WEB-INF/pages/mobile" + resourceName);
+            pathsToCheck.push("/WEB-INF/pages/mobile" + resourceName);
         } else if (device != null && device.isTablet()) {
-//            pathsToCheck.push("/WEB-INF/pages/mobile" + resourceName);
-//            pathsToCheck.push("/WEB-INF/pages/tablet" + resourceName);
+            pathsToCheck.push("/WEB-INF/pages/mobile" + resourceName);
+            pathsToCheck.push("/WEB-INF/pages/tablet" + resourceName);
         }
 
         ViewResource thingy = null;

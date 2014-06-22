@@ -1,5 +1,7 @@
 package uk.me.krupa.wwa.dto.summary;
 
+import uk.me.krupa.wwa.entity.game.GameState;
+
 import java.util.List;
 
 /**
@@ -15,6 +17,7 @@ public class GameSummary {
     private boolean canStart;
     private boolean myGame;
     private String owner;
+    private GameState state;
 
     public Long getId() {
         return id;
@@ -78,5 +81,13 @@ public class GameSummary {
 
     public void setMyGame(boolean myGame) {
         this.myGame = myGame;
+    }
+
+    public GameState getState() {
+        return state;
+    }
+
+    public void setState(GameState state) {
+        this.state = state;
     }
 }
