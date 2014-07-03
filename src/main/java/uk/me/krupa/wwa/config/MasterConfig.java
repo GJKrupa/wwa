@@ -4,7 +4,7 @@ import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.neo4j.aspects.support.node.Neo4jNodeBacking;
 import org.springframework.data.neo4j.aspects.support.relationship.Neo4jRelationshipBacking;
@@ -19,6 +19,10 @@ import uk.me.krupa.wwa.ui.security.SecurityConfig;
 import uk.me.krupa.wwa.ui.security.SpringSocialConfig;
 import uk.me.krupa.wwa.ui.sockets.WebSocketConfig;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import java.io.File;
+
 @Configuration
 @Import({
         EntityConfig.class,
@@ -31,7 +35,7 @@ import uk.me.krupa.wwa.ui.sockets.WebSocketConfig;
         WebSocketConfig.class,
         LifecycleConfig.class
 })
-@PropertySource("classpath:application.properties")
+@PropertySource("file:${java:global/wwa/config/dir}/wwa.properties")
 @EnableAspectJAutoProxy
 @EnableLoadTimeWeaving(aspectjWeaving = EnableLoadTimeWeaving.AspectJWeaving.ENABLED)
 @EnableWebMvc
@@ -48,10 +52,11 @@ public class MasterConfig {
     }
 
     @Bean(name = "applicationProperties")
-    public PropertyPlaceholderConfigurer propertyPlaceholderConfigurer() {
+    public PropertyPlaceholderConfigurer propertyPlaceholderConfigurer() throws NamingException {
         PropertyPlaceholderConfigurer placeholderConfigurer = new PropertyPlaceholderConfigurer();
+        final String configDir = (String) new InitialContext().lookup("java:global/wwa/config/dir");
         placeholderConfigurer.setLocations(new Resource[] {
-                new ClassPathResource("application.properties")
+                new FileSystemResource(new File(new File(configDir), "wwa.properties"))
         });
         return placeholderConfigurer;
     }

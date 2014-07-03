@@ -39,7 +39,6 @@ dependencies {
 
     compile group: 'org.springframework.social', name: 'spring-social-twitter', version: springSocialVersion
     compile group: 'org.springframework.social', name: 'spring-social-facebook', version: springSocialVersion
-    compile group: 'org.springframework.social', name: 'spring-social-linkedin', version: '1.0.0.RC4'
     compile group: 'org.springframework.social', name: 'spring-social-web', version: springSocialVersion
     compile group: 'org.socialsignin', name: 'spring-social-security', version: "1.1.0-SNAPSHOT"
 

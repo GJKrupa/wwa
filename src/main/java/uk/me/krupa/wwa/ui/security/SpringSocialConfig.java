@@ -2,7 +2,6 @@ package uk.me.krupa.wwa.ui.security;
 
 import org.socialsignin.springsocial.security.signin.SpringSocialSecurityAuthenticationFactory;
 import org.socialsignin.springsocial.security.signin.SpringSocialSecuritySignInService;
-import org.socialsignin.springsocial.security.signup.SpringSocialSecurityConnectionSignUp;
 import org.socialsignin.springsocial.security.userauthorities.SimpleUserAuthoritiesService;
 import org.socialsignin.springsocial.security.userauthorities.UserAuthoritiesService;
 import org.springframework.context.annotation.Bean;
@@ -12,25 +11,16 @@ import org.springframework.core.env.Environment;
 import org.springframework.social.UserIdSource;
 import org.springframework.social.config.annotation.ConnectionFactoryConfigurer;
 import org.springframework.social.config.annotation.EnableSocial;
-import org.springframework.social.config.annotation.SocialConfiguration;
 import org.springframework.social.config.annotation.SocialConfigurer;
-import org.springframework.social.connect.*;
+import org.springframework.social.connect.ConnectionFactoryLocator;
+import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.connect.mem.InMemoryUsersConnectionRepository;
-import org.springframework.social.connect.web.ConnectController;
 import org.springframework.social.connect.web.ProviderSignInController;
 import org.springframework.social.connect.web.SignInAdapter;
 import org.springframework.social.facebook.connect.FacebookConnectionFactory;
-import org.springframework.social.linkedin.connect.LinkedInConnectionFactory;
 import org.springframework.social.security.AuthenticationNameUserIdSource;
 import org.springframework.social.twitter.connect.TwitterConnectionFactory;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.view.RedirectView;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 
 @Configuration
 @EnableSocial
@@ -51,11 +41,6 @@ public class SpringSocialConfig implements SocialConfigurer {
                 env.getProperty("facebook.app.id"),
                 env.getProperty("facebook.app.secret")
         ));
-        config.addConnectionFactory(new LinkedInConnectionFactory(
-                env.getProperty("linkedin.app.key"),
-                env.getProperty("linkedin.app.secret")
-        ));
-
     }
 
     @Override
