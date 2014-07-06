@@ -5,12 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.stereotype.Service;
-import uk.me.krupa.wwa.dto.detail.CardDetail;
 import uk.me.krupa.wwa.dto.detail.GameDetail;
 import uk.me.krupa.wwa.dto.detail.PlayDetail;
 import uk.me.krupa.wwa.dto.detail.WhiteCardDetail;
 import uk.me.krupa.wwa.dto.summary.GameSummary;
-import uk.me.krupa.wwa.entity.cards.BlackCard;
 import uk.me.krupa.wwa.entity.game.Game;
 import uk.me.krupa.wwa.entity.game.GameState;
 import uk.me.krupa.wwa.entity.game.Play;
@@ -18,7 +16,6 @@ import uk.me.krupa.wwa.entity.game.Round;
 import uk.me.krupa.wwa.entity.user.User;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by krupagj on 17/06/2014.
@@ -46,6 +43,7 @@ public class GameDtoConverterImpl implements GameDtoConverter {
         gameSummary.setYourTurn(isYourTurn(game, user));
         gameSummary.setCanStart(canStart(game, user));
         gameSummary.setCanPlay(canPlay(game));
+        gameSummary.setPasswordProtected(game.getPassword() != null);
         if (game.getOwner().getUser().equals(user)) {
             gameSummary.setMyGame(true);
         }

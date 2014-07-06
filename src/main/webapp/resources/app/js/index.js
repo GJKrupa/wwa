@@ -83,12 +83,43 @@ angular.module('indexControllers', [])
         this.refresh();
     }])
 
+    .controller('CreateGameController', ['GamesService', '$filter', function(GamesService, $filter) {
+        this.cardSets = GamesService.getCardSets();
+        this.name = "";
+        this.password = "";
+
+        this.createGame = function() {
+            GamesService.createGame({
+                name: this.name,
+                password: this.password,
+                cardSets: $.map(
+                    $filter('filter')(this.cardSets, {selected:true}, true),
+                    function(cardSet) {
+                        return cardSet.id;
+                    })
+            });
+            this.name = "";
+            this.password = "";
+            $.each(this.cardSets, function(index, cardSet) {
+                cardSet.selected = false;
+            })
+        };
+
+        this.handleNotification = function(notification) {
+            if (notification.user != this.userId) {
+                toastr.info(notification.displayMessage);
+            }
+        };
+    }])
+
     .controller('MyGamesController', ['GamesService', function(GamesService) {
         this.myGames = GamesService.getMyGames();
         this.openGames = GamesService.getOpenGames();
         this.gameName = "";
         this.orderProp = 'name';
         this.userId = userId;
+        this.gameToJoin = null;
+        this.password = null;
 
         this.refreshOpenGames = function() {
             this.openGames = GamesService.getOpenGames();
@@ -120,18 +151,26 @@ angular.module('indexControllers', [])
         };
 
         this.joinGame = function(id) {
-            this.myGames.push(GamesService.joinGame(id));
-            for (n=0; n<this.openGames.length; ++n) {
-                if (this.openGames[n].id == id) {
-                    this.openGames.splice(n, 1);
-                    break;
+            var theGame = GamesService.joinGame({id: id, password: this.password});
+            this.password = null;
+            theGame.$promise.then(angular.bind(this, function(game) {
+                this.myGames.push(game);
+                for (n=0; n<this.openGames.length; ++n) {
+                    if (this.openGames[n].id == id) {
+                        this.openGames.splice(n, 1);
+                        break;
+                    }
                 }
-            }
+            }),
+            angular.bind(this, function(reason) {
+                alert(JSON.stringify(this));
+            }));
+
         };
 
-        this.createGame = function(name) {
-            this.myGames.push(GamesService.createGame(this.gameName));
-            this.gameName = "";
+        this.passwordPrompt = function(id) {
+            this.gameToJoin = id;
+            $('#passwordModal').modal('show');
         };
 
         this.gameUpdated = function(id) {
@@ -186,6 +225,7 @@ angular.module('indexServices', ['ngResource'])
             getGame: {method: 'POST', params: {dest: 'getGame.do'}},
             joinGame: {method: 'POST', params: {dest: 'joinGame.do'}},
             createGame: {method: 'POST', params: {dest: 'createGame.do'}},
+            getCardSets: {method: 'GET', params: {dest: 'cardSets.do'}, isArray: true},
             start: {method: 'POST', params: {dest: 'startGame.do'}}
         })
     }])

@@ -2,9 +2,7 @@ package uk.me.krupa.wwa.service.game;
 
 import uk.me.krupa.wwa.dto.detail.GameDetail;
 import uk.me.krupa.wwa.dto.summary.GameSummary;
-import uk.me.krupa.wwa.entity.cards.WhiteCard;
 import uk.me.krupa.wwa.entity.game.Game;
-import uk.me.krupa.wwa.entity.game.Play;
 import uk.me.krupa.wwa.entity.game.Round;
 import uk.me.krupa.wwa.entity.user.User;
 
@@ -19,9 +17,9 @@ public interface GameService {
 
     List<GameSummary> getOpenGames(User user);
 
-    GameSummary createGame(User user, String name);
+    GameSummary createGame(User user, String name, String password, List<Long> cardSets);
 
-    void joinGame(User user, Long id);
+    void joinGame(User user, Long id, String password) throws IllegalAccessException;
 
     Game getGameById(long id);
 

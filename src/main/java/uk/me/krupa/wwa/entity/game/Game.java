@@ -32,6 +32,8 @@ public class Game extends BaseEntity {
 
     private Set<WhiteCard> whiteDeck;
 
+    private String password;
+
     public String getName() {
         return name;
     }
@@ -101,6 +103,14 @@ public class Game extends BaseEntity {
 
     public void setWhiteDeck(Set<WhiteCard> whiteDeck) {
         this.whiteDeck = whiteDeck;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Player addPlayer(User user) {

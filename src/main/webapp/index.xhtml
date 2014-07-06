@@ -19,16 +19,9 @@
 
             <div class="row" ng-controller="MyGamesController as gamesController" id="topLevel">
                 <div class="col-md-12">
-                    <h2><h:outputText value="#{messages.createNewGame}"/></h2>
-                    <h:form id="createGame">
-                        <div class="form-group">
-                            <label for="gameName"><h:outputText value="#{messages.name}"/></label>
-                            <input id="gameName" class="form-control" ng-model="gamesController.gameName"/>
-                        </div>
-                        <a ng-click="gamesController.createGame()" class="btn btn-info">
-                            <i class="fa fa-plus"></i> | <h:outputText value="#{messages.createGame}"/>
-                        </a>
-                    </h:form>
+                    <a href="create.xhtml" class="btn btn-info btn-block">
+                        <i class="fa fa-plus"></i> | <h:outputText value="#{messages.createGame}"/>
+                    </a>
                 </div>
 
                 <div class="col-md-6">
@@ -77,23 +70,55 @@
                         <div class="list-group">
                             <div class="list-group-item" ng-repeat="game in gamesController.openGames">
                                 <span class="badge">{{game.players.length}}</span>
-                                <h4 class="list-group-item-heading">{{game.name}}</h4>
+                                <span class="pull-right">&nbsp;</span>
+                                <span class="label label-danger fa fa-lock pull-right" ng-if="game.passwordProtected">
+                                    <h:outputText value=" #{messages.passwordProtected}"/>
+                                </span>
+
+                                <h4 class="list-group-item-heading">{{game.name}}
+                                </h4>
+
                                 <p>
                                     <h:outputText value="#{messages.owner}"/>: {{game.owner}}
                                 </p>
                                 <p>
-                                    <a ng-click="gamesController.joinGame(game.id)" class="btn btn-info">
+                                    <a ng-click="gamesController.joinGame(game.id)" class="btn btn-info" ng-if="!game.passwordProtected">
+                                        <i class="fa fa-users"></i> | <h:outputText value="#{messages.join}"/>
+                                    </a>
+
+                                    <a ng-click="gamesController.passwordPrompt(game.id)" class="btn btn-info" ng-if="game.passwordProtected">
                                         <i class="fa fa-users"></i> | <h:outputText value="#{messages.join}"/>
                                     </a>
                                 </p>
                             </div>
                         </div>
                     </h:form>
-
-
                 </div>
 
+                <div class="modal fade" id="passwordModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                <h4 class="modal-title" id="myModalLabel"><h:outputText value="#{messages.joinGame}"/></h4>
+                            </div>
+                            <div class="modal-body">
+                                <form>
+                                    <div class="form-group">
+                                        <label for="password"><h:outputText value="#{messages.password}"/></label>
+                                        <input class="form-control" name="password" type="password" ng-model="gamesController.password"/>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal"><h:outputText value="#{messages.cancel}"/></button>
+                                <button type="button" ng-click="gamesController.joinGame(gamesController.gameToJoin)" data-dismiss="modal" class="btn btn-primary"><h:outputText value="#{messages.join}"/></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+
 
         </ui:define>
 

@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
 
 /**
  * Created by krupagj on 02/05/2014.
@@ -30,6 +29,7 @@ public class InitialisationServiceImpl implements InitialisationService {
     private static final Logger LOG = Logger.getLogger(InitialisationServiceImpl.class.getName());
 
     private static final String CARD_SET_NAME = "Standard";
+    private static final String CARD_SET_DESCRIPTION = "The standard Cards Against Humanity set";
     private static final int TEST_USER_COUNT = 10;
 
     @Autowired
@@ -52,6 +52,7 @@ public class InitialisationServiceImpl implements InitialisationService {
             UserAuthority defaultAuthority = createUserAuthorities();
             // TODO: Remove for production
             createTestUsers(defaultAuthority);
+            createDefaultCardSet();
             createDefaultCardSet();
         }
     }
@@ -85,6 +86,7 @@ public class InitialisationServiceImpl implements InitialisationService {
     private void createDefaultCardSet() {
         CardSet cardSet = new CardSet();
         cardSet.setName(CARD_SET_NAME);
+        cardSet.setDescription(CARD_SET_DESCRIPTION);
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/black.txt")))) {
             String line;
@@ -113,7 +115,7 @@ public class InitialisationServiceImpl implements InitialisationService {
                 }
             }
         } catch (IOException ex) {
-            throw new IllegalArgumentException("No black.txt", ex);
+            throw new IllegalArgumentException("No white.txt", ex);
         }
 
         cardRepository.save(cardSet);

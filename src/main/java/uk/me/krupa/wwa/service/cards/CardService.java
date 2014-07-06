@@ -1,5 +1,6 @@
 package uk.me.krupa.wwa.service.cards;
 
+import uk.me.krupa.wwa.dto.summary.CardSetSummary;
 import uk.me.krupa.wwa.entity.cards.BlackCard;
 import uk.me.krupa.wwa.entity.cards.CardSet;
 import uk.me.krupa.wwa.entity.cards.WhiteCard;
@@ -11,7 +12,7 @@ import java.util.List;
  */
 public interface CardService {
 
-    List<CardSet> getAllCardSets();
+    List<CardSetSummary> getAllCardSets();
 
     List<BlackCard> getBlackCardsFor(CardSet cardSet);
 

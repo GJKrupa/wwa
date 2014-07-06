@@ -13,6 +13,7 @@ import java.util.Set;
 public class CardSet extends BaseEntity {
 
     private String name;
+    private String description;
     private Set<BlackCard> blackCards;
     private Set<WhiteCard> whiteCards;
 
@@ -22,6 +23,14 @@ public class CardSet extends BaseEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Set<BlackCard> getBlackCards() {

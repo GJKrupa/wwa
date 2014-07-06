@@ -3,9 +3,11 @@ package uk.me.krupa.wwa.service.cards;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.me.krupa.wwa.dto.summary.CardSetSummary;
 import uk.me.krupa.wwa.entity.cards.BlackCard;
 import uk.me.krupa.wwa.entity.cards.CardSet;
 import uk.me.krupa.wwa.entity.cards.WhiteCard;
+import uk.me.krupa.wwa.fgs.card.CardDtoConverter;
 import uk.me.krupa.wwa.repository.cards.CardRepository;
 
 import java.util.Collections;
@@ -21,10 +23,13 @@ public class CardServiceImpl implements CardService {
     @Autowired
     private CardRepository cardRepository;
 
+    @Autowired
+    private CardDtoConverter cardDtoConverter;
+
     @Override
     @Transactional(readOnly = true)
-    public List<CardSet> getAllCardSets() {
-        return cardRepository.findAll().as(LinkedList.class);
+    public List<CardSetSummary> getAllCardSets() {
+        return cardDtoConverter.toSummaries(cardRepository.findAll().as(LinkedList.class));
     }
 
     @Override

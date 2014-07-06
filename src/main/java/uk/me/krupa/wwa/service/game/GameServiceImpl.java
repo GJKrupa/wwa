@@ -2,12 +2,13 @@ package uk.me.krupa.wwa.service.game;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import uk.me.krupa.wwa.dto.detail.GameDetail;
 import uk.me.krupa.wwa.dto.summary.GameSummary;
 import uk.me.krupa.wwa.entity.cards.BlackCard;
-import uk.me.krupa.wwa.entity.cards.CardSet;
 import uk.me.krupa.wwa.entity.cards.WhiteCard;
 import uk.me.krupa.wwa.entity.game.*;
 import uk.me.krupa.wwa.entity.user.User;
@@ -53,6 +54,9 @@ public class GameServiceImpl implements GameService {
     @Autowired
     private GameDtoConverter gameDtoConverter;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     @Transactional(readOnly = false)
     public Round createNewRound(long gameId) {
@@ -95,26 +99,39 @@ public class GameServiceImpl implements GameService {
 
     @Override
     @Transactional
-    public GameSummary createGame(User user, String name) {
+    public GameSummary createGame(User user, String name, String password, List<Long> cardSets) {
         Game game = new Game();
         game.setName(name);
+        if (StringUtils.hasText(password)) {
+            game.setPassword(passwordEncoder.encode(password));
+        }
         game.setState(GameState.PENDING);
 
         Player owner = game.addPlayer(user);
         game.setOwner(owner);
 
-        CardSet cardSet = cardRepository.findAll().iterator().next();
-
-        game.getBlackDeck().addAll(cardRepository.getBlackCardsInSet(cardSet));
-        game.getWhiteDeck().addAll(cardRepository.getWhiteCardsInSet(cardSet));
+        cardSets.stream().map(s -> cardRepository.findOne(s))
+                .filter(s -> s != null)
+                .forEach(s -> {
+                    game.getBlackDeck().addAll(cardRepository.getBlackCardsInSet(s));
+                    game.getWhiteDeck().addAll(cardRepository.getWhiteCardsInSet(s));
+                });
 
         return gameDtoConverter.toSummary(gameRepository.save(game), user);
     }
 
     @Override
     @Transactional
-    public void joinGame(User user, Long id) {
+    public void joinGame(User user, Long id, String password) throws IllegalAccessException {
         Game game = gameRepository.findOne(id);
+
+        if (game.getPassword() != null) {
+            String encoded = passwordEncoder.encode(password);
+            if (!game.getPassword().equals(encoded)) {
+                throw new Access("Incorrect password");
+            }
+        }
+
         game.addPlayer(user);
         gameRepository.save(game);
     }

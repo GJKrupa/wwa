@@ -18,6 +18,7 @@ public class GameSummary {
     private boolean myGame;
     private String owner;
     private GameState state;
+    private boolean passwordProtected;
 
     public Long getId() {
         return id;
@@ -89,5 +90,13 @@ public class GameSummary {
 
     public void setState(GameState state) {
         this.state = state;
+    }
+
+    public boolean isPasswordProtected() {
+        return passwordProtected;
+    }
+
+    public void setPasswordProtected(boolean passwordProtected) {
+        this.passwordProtected = passwordProtected;
     }
 }

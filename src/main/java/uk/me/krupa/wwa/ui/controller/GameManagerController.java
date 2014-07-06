@@ -2,11 +2,12 @@ package uk.me.krupa.wwa.ui.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import uk.me.krupa.wwa.dto.request.CreateGameRequest;
+import uk.me.krupa.wwa.dto.request.JoinGameRequest;
 import uk.me.krupa.wwa.dto.summary.GameSummary;
 import uk.me.krupa.wwa.service.game.GameService;
 import uk.me.krupa.wwa.service.notification.NotificationService;
@@ -28,9 +29,9 @@ public class GameManagerController extends AbstractController {
 
     @RequestMapping("/createGame.do")
     @ResponseBody
-    public GameSummary createGame(@RequestBody String name) {
-        GameSummary game = gameService.createGame(getUser(), name);
-        notificationService.notifyGameCreated(getUser(), game.getId(), name);
+    public GameSummary createGame(@RequestBody CreateGameRequest request) {
+        GameSummary game = gameService.createGame(getUser(), request.getName(), request.getPassword(), request.getCardSets());
+        notificationService.notifyGameCreated(getUser(), game.getId(), request.getName());
         return game;
     }
 
@@ -63,9 +64,9 @@ public class GameManagerController extends AbstractController {
 
     @RequestMapping("/joinGame.do")
     @ResponseBody
-    public GameSummary joinGame(@RequestBody long id) {
-        gameService.joinGame(getUser(), id);
-        notificationService.notifyGameJoined(getUser(), id);
-        return gameService.getGameSummaryById(id, getUser());
+    public GameSummary joinGame(@RequestBody JoinGameRequest request) {
+        gameService.joinGame(getUser(), request.getId(), request.getPassword());
+        notificationService.notifyGameJoined(getUser(), request.getId());
+        return gameService.getGameSummaryById(request.getId(), getUser());
     }
 }
