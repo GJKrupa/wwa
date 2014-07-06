@@ -19,7 +19,7 @@ public interface GameService {
 
     GameSummary createGame(User user, String name, String password, List<Long> cardSets);
 
-    void joinGame(User user, Long id, String password) throws IllegalAccessException;
+    void joinGame(User user, Long id, String password);
 
     Game getGameById(long id);
 

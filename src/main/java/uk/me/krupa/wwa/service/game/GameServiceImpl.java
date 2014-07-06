@@ -2,6 +2,7 @@ package uk.me.krupa.wwa.service.game;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -122,13 +123,13 @@ public class GameServiceImpl implements GameService {
 
     @Override
     @Transactional
-    public void joinGame(User user, Long id, String password) throws IllegalAccessException {
+    public void joinGame(User user, Long id, String password) {
         Game game = gameRepository.findOne(id);
 
         if (game.getPassword() != null) {
             String encoded = passwordEncoder.encode(password);
             if (!game.getPassword().equals(encoded)) {
-                throw new Access("Incorrect password");
+                throw new AccessDeniedException("Incorrect password");
             }
         }
 
