@@ -28,8 +28,6 @@ public class InitialisationServiceImpl implements InitialisationService {
 
     private static final Logger LOG = Logger.getLogger(InitialisationServiceImpl.class.getName());
 
-    private static final String CARD_SET_NAME = "Standard";
-    private static final String CARD_SET_DESCRIPTION = "The standard Cards Against Humanity set";
     private static final int TEST_USER_COUNT = 10;
 
     @Autowired
@@ -52,8 +50,8 @@ public class InitialisationServiceImpl implements InitialisationService {
             UserAuthority defaultAuthority = createUserAuthorities();
             // TODO: Remove for production
             createTestUsers(defaultAuthority);
-            createDefaultCardSet();
-            createDefaultCardSet();
+            createCardSet("Default", "The standard Cards Against Humanity set", "standard");
+            createCardSet("EYC 8/51", "Expand your Cards Black 8/White 51", "eyc_8_51");
         }
     }
 
@@ -83,12 +81,12 @@ public class InitialisationServiceImpl implements InitialisationService {
         return userAuthorityRepository.findByPermission(UserAuthority.ROLE_USER) != null;
     }
 
-    private void createDefaultCardSet() {
+    private void createCardSet(String name, String description, String directory) {
         CardSet cardSet = new CardSet();
-        cardSet.setName(CARD_SET_NAME);
-        cardSet.setDescription(CARD_SET_DESCRIPTION);
+        cardSet.setName(name);
+        cardSet.setDescription(description);
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/black.txt")))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/cardsets/" + directory + "/black.txt")))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 System.out.println("BLACK: " + line);
@@ -104,7 +102,7 @@ public class InitialisationServiceImpl implements InitialisationService {
             throw new IllegalArgumentException("No black.txt", ex);
         }
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/white.txt")))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/cardsets/" + directory + "/white.txt")))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 System.out.println("WHITE: " + line);
