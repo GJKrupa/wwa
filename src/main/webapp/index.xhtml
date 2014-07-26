@@ -18,6 +18,7 @@
         <ui:define name="content">
 
             <div class="row" ng-controller="MyGamesController as gamesController" id="topLevel">
+
                 <div class="col-md-12">
                     <a href="create.xhtml" class="btn btn-info btn-block">
                         <i class="fa fa-plus"></i> | <h:outputText value="#{messages.createGame}"/>
@@ -112,11 +113,32 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-default" data-dismiss="modal"><h:outputText value="#{messages.cancel}"/></button>
-                                <button type="button" ng-click="gamesController.joinGame(gamesController.gameToJoin)" data-dismiss="modal" class="btn btn-primary"><h:outputText value="#{messages.join}"/></button>
+                                <button type="button" ng-disabled="!gamesController.password" ng-click="gamesController.joinGame(gamesController.gameToJoin)" data-dismiss="modal" class="btn btn-primary"><h:outputText value="#{messages.join}"/></button>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-sm bg-danger">
+                        <div class="modal-content">
+                            <div class="modal-header bg-danger">
+                                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                <h4 class="modal-title" id="errorModalLabel">
+                                    <i class="fa fa-warning"></i>
+                                    <h:outputText value="#{messages.error}"/>
+                                </h4>
+                            </div>
+                            <div class="modal-body bg-danger">
+                                {{gamesController.errorMessage}}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal"><h:outputText value="#{messages.close}"/></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
 

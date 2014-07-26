@@ -1,4 +1,4 @@
-angular.module('app', ['indexControllers', 'indexServices']);
+angular.module('app', ['indexControllers', 'indexServices', 'ui.bootstrap']);
 
 angular.module('indexControllers', [])
 
@@ -83,13 +83,13 @@ angular.module('indexControllers', [])
         this.refresh();
     }])
 
-    .controller('CreateGameController', ['GamesService', '$filter', function(GamesService, $filter) {
+    .controller('CreateGameController', ['GamesService', '$filter', '$window', function(GamesService, $filter, $window) {
         this.cardSets = GamesService.getCardSets();
         this.name = "";
         this.password = "";
 
         this.createGame = function() {
-            GamesService.createGame({
+            var game = GamesService.createGame({
                 name: this.name,
                 password: this.password,
                 cardSets: $.map(
@@ -103,6 +103,11 @@ angular.module('indexControllers', [])
             $.each(this.cardSets, function(index, cardSet) {
                 cardSet.selected = false;
             })
+            game.$promise.then(
+                angular.bind(this, function(game) {
+                    $window.location.href='index.xhtml';
+                })
+            );
         };
 
         this.handleNotification = function(notification) {
@@ -120,6 +125,12 @@ angular.module('indexControllers', [])
         this.userId = userId;
         this.gameToJoin = null;
         this.password = null;
+        this.errorMessage = null;
+
+        this.tabs = [
+            {active: true},
+            {active: false}
+        ];
 
         this.refreshOpenGames = function() {
             this.openGames = GamesService.getOpenGames();
@@ -154,16 +165,24 @@ angular.module('indexControllers', [])
             var theGame = GamesService.joinGame({id: id, password: this.password});
             this.password = null;
             theGame.$promise.then(angular.bind(this, function(game) {
-                this.myGames.push(game);
-                for (n=0; n<this.openGames.length; ++n) {
-                    if (this.openGames[n].id == id) {
-                        this.openGames.splice(n, 1);
-                        break;
+                $('#passwordModal').modal('hide');
+                if (!theGame.error) {
+                    this.myGames.push(game);
+                    this.tabs[0].active = true;
+                    for (n=0; n<this.openGames.length; ++n) {
+                        if (this.openGames[n].id == id) {
+                            this.openGames.splice(n, 1);
+                            break;
+                        }
                     }
+                } else {
+                    this.errorMessage = theGame.errorMessage;
+                    $('#errorModal').modal('show');
                 }
             }),
             angular.bind(this, function(reason) {
-                alert(JSON.stringify(this));
+                console.log(reason);
+                alert(reason);
             }));
 
         };

@@ -127,8 +127,7 @@ public class GameServiceImpl implements GameService {
         Game game = gameRepository.findOne(id);
 
         if (game.getPassword() != null) {
-            String encoded = passwordEncoder.encode(password);
-            if (!game.getPassword().equals(encoded)) {
+            if (!passwordEncoder.matches(password, game.getPassword())) {
                 throw new AccessDeniedException("Incorrect password");
             }
         }

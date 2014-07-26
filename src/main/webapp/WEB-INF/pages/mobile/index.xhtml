@@ -17,88 +17,133 @@
 
         <ui:define name="content">
 
-            <ul class="nav nav-tabs">
-                <li class="active"><a href="#myGames" data-toggle="tab">Mine</a></li>
-                <li><a href="#openGames" data-toggle="tab">Available</a></li>
-                <li><a href="#createGame" data-toggle="tab">Create</a></li>
-            </ul>
+            <div class="row">
+                <div class="col-md-12">
+                    <p>
+                    <a href="create.xhtml" class="btn btn-info btn-block">
+                        <i class="fa fa-plus"></i> | <h:outputText value="#{messages.createGame}"/>
+                    </a>
+                    </p>
+                </div>
+            </div>
 
-            <div class="tab-content" ng-controller="MyGamesController as gamesController" id="topLevel">
 
+            <div class="row" ng-controller="MyGamesController as gamesController" id="topLevel" ng-init="mineActive=true">
+                <tabset>
+                    <tab heading="Mine" active="gamesController.tabs[0].active">
+                        <h2><h:outputText value="#{messages.myGames}"/></h2>
+                        <h:form id="myGame">
 
-                <div class="tab-pane active" id="myGames">
-                    <h2><h:outputText value="#{messages.myGames}"/></h2>
-                    <h:form id="myGame">
-
-                        <ul class="list-group">
-                            <li ng-repeat="game in gamesController.myGames" class="list-group-item">
+                            <ul class="list-group">
+                                <li ng-repeat="game in gamesController.myGames" class="list-group-item">
                                 <span class="label label-success pull-right" ng-if="game.yourTurn">
                                     <h:outputText value="#{messages.yourTurn}"/>
                                 </span>
-                                <h4 class="list-group-item-heading">{{game.name}}</h4>
-                                <p class="list-group-item-text">
-                                    <h:outputText value="#{messages.owner}"/>:
-                                    <span ng-if="!game.myGame">{{game.owner}}</span>
-                                    <span ng-if="game.myGame"><h:outputText value="#{messages.me}"/></span>
-                                </p>
+                                    <h4 class="list-group-item-heading">{{game.name}}</h4>
+                                    <p class="list-group-item-text">
+                                        <h:outputText value="#{messages.owner}"/>:
+                                        <span ng-if="!game.myGame">{{game.owner}}</span>
+                                        <span ng-if="game.myGame"><h:outputText value="#{messages.me}"/></span>
+                                    </p>
 
-                                <p>
-                                    <h:outputText value="#{messages.players}"/>:
-                                </p>
+                                    <p>
+                                        <h:outputText value="#{messages.players}"/>:
+                                    </p>
 
-                                <ul class="userList">
-                                    <li ng-repeat="player in game.players">
-                                        <img src="{{player.avatarUrl}}" alt="avatar"/> {{player.name}}: {{player.score}}
-                                    </li>
-                                </ul>
+                                    <ul class="userList">
+                                        <li ng-repeat="player in game.players">
+                                            <img src="{{player.avatarUrl}}" alt="avatar"/> {{player.name}}: {{player.score}}
+                                        </li>
+                                    </ul>
 
-                                <p>
-                                    <a href="play.xhtml?id={{game.id}}" class="btn btn-info btn-block" ng-if="game.canPlay">
-                                        <i class="fa fa-folder-open"></i> | <h:outputText value="#{messages.open}"/>
-                                    </a>
+                                    <p>
+                                        <a href="play.xhtml?id={{game.id}}" class="btn btn-info btn-block" ng-if="game.canPlay">
+                                            <i class="fa fa-folder-open"></i> | <h:outputText value="#{messages.open}"/>
+                                        </a>
 
-                                    <a ng-click="gamesController.startGame(game.id)" class="btn btn-success btn-block" ng-if="game.canStart">
-                                        <i class="fa fa-check-circle"></i> | <h:outputText value="#{messages.start}"/>
-                                    </a>
-                                </p>
-                            </li>
-                        </ul>
-                    </h:form>
-                </div>
+                                        <a ng-click="gamesController.startGame(game.id)" class="btn btn-success btn-block" ng-if="game.canStart">
+                                            <i class="fa fa-check-circle"></i> | <h:outputText value="#{messages.start}"/>
+                                        </a>
+                                    </p>
+                                </li>
+                            </ul>
+                        </h:form>
+                    </tab>
 
-                <div class="tab-pane" id="openGames">
-                    <h2><h:outputText value="#{messages.availableGames}"/></h2>
-                    <h:form id="openGame">
-                        <div class="list-group">
-                            <div class="list-group-item" ng-repeat="game in gamesController.openGames">
-                                <span class="badge">{{game.players.length}}</span>
-                                <h4 class="list-group-item-heading">{{game.name}}</h4>
-                                <p>
-                                    <h:outputText value="#{messages.owner}"/>: {{game.owner}}
-                                </p>
-                                <p>
-                                    <a ng-click="gamesController.joinGame(game.id)" class="btn btn-info btn-block">
-                                        <i class="fa fa-users"></i> | <h:outputText value="#{messages.join}"/>
-                                    </a>
-                                </p>
+                    <tab heading="Available" active="gamesController.tabs[1].active">
+                        <h2><h:outputText value="#{messages.availableGames}"/></h2>
+                        <h:form id="openGame">
+                            <div class="list-group">
+                                <div class="list-group-item" ng-repeat="game in gamesController.openGames">
+                                    <span class="badge">{{game.players.length}}</span>
+                                    <span class="pull-right">&nbsp;</span>
+                                    <span class="label label-danger fa fa-lock pull-right" ng-if="game.passwordProtected">
+                                        <h:outputText value=" #{messages.passwordProtected}"/>
+                                    </span>
+
+                                    <h4 class="list-group-item-heading">{{game.name}}</h4>
+                                    <p>
+                                        <h:outputText value="#{messages.owner}"/>: {{game.owner}}
+                                    </p>
+                                    <p>
+                                        <a ng-click="gamesController.joinGame(game.id)" class="btn btn-info btn-block" ng-if="!game.passwordProtected">
+                                            <i class="fa fa-users"></i> | <h:outputText value="#{messages.join}"/>
+                                        </a>
+
+                                        <a ng-click="gamesController.passwordPrompt(game.id)" class="btn btn-info btn-block" ng-if="game.passwordProtected">
+                                            <i class="fa fa-users"></i> | <h:outputText value="#{messages.join}"/>
+                                        </a>
+                                    </p>
+                                </div>
+                            </div>
+                        </h:form>
+                    </tab>
+                </tabset>
+
+                <div class="modal fade" id="passwordModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                <h4 class="modal-title" id="myModalLabel"><h:outputText value="#{messages.joinGame}"/></h4>
+                            </div>
+                            <div class="modal-body">
+                                <form>
+                                    <div class="form-group">
+                                        <label for="password"><h:outputText value="#{messages.password}"/></label>
+                                        <input class="form-control" name="password" type="password" ng-model="gamesController.password"/>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal"><h:outputText value="#{messages.cancel}"/></button>
+                                <button type="button" ng-disabled="!gamesController.password" ng-click="gamesController.joinGame(gamesController.gameToJoin)" data-dismiss="modal" class="btn btn-primary"><h:outputText value="#{messages.join}"/></button>
                             </div>
                         </div>
-                    </h:form>
+                    </div>
                 </div>
 
-                <div class="tab-pane" id="createGame">
-                    <h2><h:outputText value="#{messages.createNewGame}"/></h2>
-                    <div class="form-group">
-                        <label for="gameName"><h:outputText value="#{messages.name}"/></label>
-                        <input id="gameName" class="form-control" ng-model="gamesController.gameName"/>
+                <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-sm bg-danger">
+                        <div class="modal-content">
+                            <div class="modal-header bg-danger">
+                                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                <h4 class="modal-title" id="errorModalLabel">
+                                    <i class="fa fa-warning"></i>
+                                    <h:outputText value="#{messages.error}"/>
+                                </h4>
+                            </div>
+                            <div class="modal-body bg-danger">
+                                {{gamesController.errorMessage}}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal"><h:outputText value="#{messages.close}"/></button>
+                            </div>
+                        </div>
                     </div>
-                    <a ng-click="gamesController.createGame()" class="btn btn-info">
-                        <i class="fa fa-plus"></i> | <h:outputText value="#{messages.createGame}"/>
-                    </a>
                 </div>
 
             </div>
-
         </ui:define>
 
         <ui:define name="scripts">

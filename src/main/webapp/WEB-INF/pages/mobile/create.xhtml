@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <ui:composition template="templates/template-nav.xhtml">
+        <ui:define name="head">
+            <title><h:outputText value="#{messages.appName}"/></title>
+            <h:outputScript library="app" name="js/index.js"/>
+            <script language="javascript" type="text/javascript">
+                var userId = #{gameManagerController.user.id};
+            </script>
+
+        </ui:define>
+
+        <ui:define name="content">
+
+            <div class="row" ng-controller="CreateGameController as controller" id="topLevel">
+                <div class="col-md-12">
+                    <h2><h:outputText value="#{messages.createNewGame}"/></h2>
+                    <form name="createGame" action="#">
+                        <div class="form-group has-success has-feedback {{createGame.gameName.$error.required ? 'has-error' : ''}}">
+                            <label for="gameName" class="control-label"><h:outputText value="#{messages.name}"/></label>
+                            <input name="gameName" id="gameName" class="form-control" ng-model="controller.name" required="true" />
+                            <span class="{{createGame.gameName.$error.required ? 'fa fa-warning' : 'fa fa-check-circle'}} form-control-feedback"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="password"><h:outputText value="#{messages.password}"/></label>
+                            <input id="password" class="form-control" ng-model="controller.password"/>
+                        </div>
+                        <h2><h:outputText value="#{messages.cardSets}"/></h2>
+
+                        <div class="alert alert-danger" ng-if="(controller.cardSets|filter:{selected:true}).length == 0">
+                            <span class="fa fa-warning"></span>
+                            <h:outputText value=" #{messages.mustSelectCardSet}"/>
+                        </div>
+
+                        <div class="alert alert-success" ng-if="(controller.cardSets|filter:{selected:true}).length != 0">
+                            <span class="fa fa-check-circle"></span>
+                            {{(controller.cardSets|filter:{selected:true}).length}}
+                        </div>
+
+                        <div class="panel panel-default" ng-repeat="cardSet in controller.cardSets">
+                            <div class="panel-heading">
+                                <button class="btn btn-success btn-block" ng-if="!cardSet.selected" ng-click="cardSet.selected=true"><span class="fa fa-plus"></span> <strong>{{cardSet.name}}</strong></button>
+                                <button class="btn btn-danger btn-block" ng-if="cardSet.selected" ng-click="cardSet.selected=false"><span class="fa fa-trash-o"></span> <strong>{{cardSet.name}}</strong></button>
+                            </div>
+
+                            <div class="panel-body">{{cardSet.description}}</div>
+                        </div>
+
+                        <p>
+                        <a ng-disabled="createGame.gameName.$error.required || (controller.cardSets|filter:{selected:true}).length == 0" ng-click="controller.createGame()" class="btn btn-info btn-block">
+                            <i class="fa fa-plus"></i> | <h:outputText value="#{messages.createGame}"/>
+                        </a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+
+        </ui:define>
+
+        <ui:define name="scripts">
+            <script language="javascript" type="text/javascript">
+                $(function() {
+                    var socket = new SockJS("/wwa-1.0/game");
+                    var stompClient = Stomp.over(socket);
+                    stompClient.connect('fred', 'fred', function() {
+                        stompClient.subscribe('/topic/user/#{gameManagerController.user.id}', function(message) {
+                            notification = JSON.parse(message.body);
+                            var controller = angular.element(document.getElementById('topLevel')).scope().controller;
+                            controller.handleNotification(notification);
+                        });
+                        stompClient.subscribe('/topic/user/all', function(message) {
+                            notification = JSON.parse(message.body);
+                            var controller = angular.element(document.getElementById('topLevel')).scope().controller;
+                            controller.handleNotification(notification);
+                        });
+                    });
+                });
+            </script>
+        </ui:define>
+    </ui:composition>
+
+</html>

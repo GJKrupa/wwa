@@ -2,10 +2,13 @@ package uk.me.krupa.wwa.ui.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import uk.me.krupa.wwa.dto.common.ErrorResponse;
 import uk.me.krupa.wwa.dto.request.CreateGameRequest;
 import uk.me.krupa.wwa.dto.request.JoinGameRequest;
 import uk.me.krupa.wwa.dto.summary.GameSummary;
@@ -68,5 +71,11 @@ public class GameManagerController extends AbstractController {
         gameService.joinGame(getUser(), request.getId(), request.getPassword());
         notificationService.notifyGameJoined(getUser(), request.getId());
         return gameService.getGameSummaryById(request.getId(), getUser());
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseBody
+    public ErrorResponse handleAccessDenied(AccessDeniedException ex) {
+        return new ErrorResponse(ErrorResponse.ACCESS_DENIED, ex.getMessage());
     }
 }
